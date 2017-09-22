@@ -1,0 +1,17 @@
+{
+  "name": "youtube_subscriber.js",
+  "version": "0.0.0",
+  "description": "A terminal/command line program to read and generates local html thumbnailed youtube links from channel feeds",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "feedme": "^1.0.1",
+    "node-getopt": "^0.2.3",
+    "opn": "^5.1.0",
+    "request": "^2.82.0"
+  }
+}
