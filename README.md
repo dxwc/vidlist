@@ -1,4 +1,4 @@
-# Status: Works for me
+# Status: ~~Works for me~~ FIXME : my use of package 'feedme' generating error
 
 - Tested with [node](https://nodejs.org/en/) v8.5.0 and npm 5.4.0
 - Recommended/commonly used versions should work too
