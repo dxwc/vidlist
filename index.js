@@ -211,7 +211,7 @@ function open_db_global()
     })
 }
 
-// let db = new sqlite3.Database('youtube_subscriber.dat'); // delete me
+let db = new sqlite3.Database('youtube_subscriber.dat'); // delete me
 
 function subscribe(youtube_url)
 {
@@ -461,12 +461,105 @@ function download_and_save_feed()
     });
 }
 
+const html_pre =
+    "<!DOCTYPE html>" +
+    "\n<html>" +
+    "\n<head>" +
+    "\n<meta charset='UTF-8'>" +
+    "\n<title>Subscription</title>" +
+    "\n<style type=\"text/css\">" +
+    "\nbody{background-color: #B4B4B4;}" +
+    "\nh2{font-size: 100%; overflow: hidden;}" +
+    "\nimg{width: 100%;}" +
+    "\na{" +
+    "\ntext-decoration: none;" +
+    "\ncolor: #333;" +
+    "\nfont-weight: bold;" +
+    "\n}" +
+    "\n#contain" +
+    "\n{" +
+    "\nfloat: left;" +
+    "\npadding-left: 2%;" +
+    "\npadding-right: 2%;" +
+    "\nwidth: 19.77%;" +
+    "\nbackground-color: #ddd;" +
+    "\npadding-top: 2%;" +
+    "\nmargin-left: 1%;" +
+    "\nmargin-bottom: 1%;" +
+    "\nheight: 298px;" +
+    "\noverflow: auto;" +
+    "\n}" +
+    "\n</style>" +
+    "\n</head>" +
+    "\n<body>\n\n";
+const html_post =
+    "\n</body>" +
+    "\n</html>";
+const section_a =
+    "\n<div id=\"contain\">" +
+    "\n<a href=\"https://www.youtube.com/embed/";
+const section_b = "?rel=0\">";
+const section_c =
+    "\n<img src=\"https://img.youtube.com/vi/";
+const section_d =
+    "/mqdefault.jpg\" >" +
+    "</a>" +
+    "\n<a href=\"https://www.youtube.com/watch?v=";
+const section_e = "\">\n<h2>";
+const section_f = "</h2></a>\n</div>\n\n";
+
+var full = "";
+
+function generate_html()
+{
+    db.all
+    (
+        `
+        SELECT
+            channel_id,
+            channel_name,
+            video_id,
+            video_title,
+            video_published,
+            video_description
+        FROM
+        subscriptions
+            INNER JOIN
+        (SELECT * FROM videos ORDER BY video_published DESC) vi
+        ON subscriptions.channel_id_id = vi.channel_id_id
+        `,
+        (err, rows) =>
+        {
+            if(err) console.log('Error:\n', err);
+            else
+            {
+                full = html_pre;
+                for(let i = 0; i < rows.length; ++i)
+                {
+                    full += section_a;
+                    full += rows[i].video_id; // id
+                    full += section_b;
+                    full += section_c;
+                    full += rows[i].video_id;
+                    full += section_d;
+                    full += rows[i].video_id;
+                    full += section_e;
+                    full += rows[i].video_title; // title
+                    full += section_f;
+                }
+                full += html_post;
+                console.log(full);
+            }
+        }
+    );
+}
 
 /// ----------------------------------
 
 open_db_global()
 .then(() =>
 {
+    generate_html();
     // return download_page('https://www.youtube.com/feeds/videos.xml?channel_id=UCO1cgjhGzsSYb1rsB4bFe4Q');
     // return download_and_save_feed();
     // return subscribe('https://www.youtube.com/watch?v=osxcTtvrs1g');
