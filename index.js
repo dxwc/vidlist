@@ -5,6 +5,7 @@ const assert = require('assert');
 const sqlite3 = require('sqlite3');
 const validator = require('validator');
 const opn = require('opn');
+const Getopt = require('node-getopt');
 
 function download_page(link, method)
 {
@@ -268,23 +269,32 @@ function subscribe(youtube_url)
 
 function list_subscriptions(names_only)
 {
-    db.each
-    (
-        `
-        SELECT * FROM subscriptions
-        `,
-        (err, row) =>
-        {
-            if(err) console.log('Error:\n', err);
-            else
+    return new Promise((resolve, reject) =>
+    {
+        db.all
+        (
+            `
+            SELECT * FROM subscriptions
+            `,
+            (err, rows) =>
             {
-                if(names_only)
-                    console.log(validator.unescape(row.channel_name));
+                if(err) reject(err);
                 else
-                    console.log(row.channel_id, validator.unescape(row.channel_name));
+                {
+                    if(names_only)
+                        for(let i = 0; i < rows.length; ++i)
+                            console.log(
+                            validator.unescape(rows[i].channel_name));
+                    else
+                        for(let i = 0; i < rows.length; ++i)
+                            console.log(
+                        rows[i].channel_id, validator.unescape(rows[i].channel_name));
+                    resolve();
+                }
             }
-        }
-    );
+        );
+    })
+
 }
 
 function parse_and_save_data(page, ch_id_id)
@@ -561,24 +571,108 @@ function generate_html()
     });
 }
 
+function close_everything(code)
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.close((err) =>
+        {
+            if(err) { console.log('=>Error:\n', err); process.exit(1) }
+            else resolve();
+        });
+    })
+    .then(() =>
+    {
+        process.exit(code);
+    });
+}
+
 /// ----------------------------------
 
-/*
+
+
+let getopt = new Getopt([
+  ['s', 'subscribe=ARG', 'Subscribe to youtube channel given a video/channel url'],
+  ['u', 'update', 'Fetch feeds for subscribed channel and update video database'],
+  ['g', 'generate', 'Generate yt_view_subscription.html in current directory'],
+  ['o', 'open', 'Open generated html file in default browser'],
+  ['l', 'list', 'Print list of your subscrbed channels'],
+  ['h', 'help', 'Display this help']
+])
+.setHelp
+(
+`Usages Youtube Subscriber (js)
+
+[[OPTIONS]]
+
+NOTE:
+
+Options to update, generate and open can be combined. For all other
+options only the first will execute.
+
+EXAMPLE:
+
+#Subscribe to a youtube chanel:
+node index.js --subscribe https://www.youtube.com/watch?v=EeNiqKNtpAA
+
+#List your subscriptions:
+node index.js --list
+
+#Update feed, Generate HTML and Open the HTML in your default browser:
+node index.js -ugo
+`
+)
+.error(() =>
+{
+    console.info('Invalid option\n', getopt.getHelp());
+    process.exit(1);
+});
+
+let opt = getopt.parse(process.argv.slice(2));
+if(process.argv.length <= 2 || opt.options.help)
+{
+    console.info(getopt.getHelp());
+    process.exit(0);
+}
+
 open_db_global()
 .then(() =>
 {
-    return generate_html();
-    // return download_page('https://www.youtube.com/feeds/videos.xml?channel_id=UCO1cgjhGzsSYb1rsB4bFe4Q');
-    // return download_and_save_feed();
-    // return subscribe('https://www.youtube.com/watch?v=osxcTtvrs1g');
-    // list_subscriptions();
+    if(opt.options.list)
+        return list_subscriptions();
+    else if(opt.options.subscribe)
+        return subscribe(opt.options.subscribe);
+    else if(opt.options.update || opt.options.generate || opt.options.open)
+    {
+        if(opt.options.update) return download_and_save_feed();
+    }
+    else return true;
 })
-.then((result) =>
+.then(() =>
 {
-    console.log('all done', result);
+    if(opt.options.list || opt.options.subscribe) return close_everything(0);
+    else if(opt.options.update) console.log('--Updated feed');
+
+    if(opt.options.generate) return generate_html();
+    else return true;
+})
+.then(() =>
+{
+    if(opt.options.generate) console.log('--Generated HTML');
+    if(opt.options.open)
+    {
+        console.log('--Opening HTML to your default browser');
+        opn('./yt_view_subscription.html')
+        .catch((err) =>
+        {
+                console.log('=>Error opening HTML:\n', err);
+                return close_everything(1);
+        });
+    }
+    setTimeout(() => { return close_everything(0)}, 600);
 })
 .catch((err) =>
 {
-    console.log('Error:\n', err);
+    console.log('=>There was an error in operation:\n', err);
+    close_everything(1);
 });
-*/
