@@ -1,7 +1,10 @@
 const https = require('https');
+const fs = require('fs');
+const assert = require('assert');
+
 const sqlite3 = require('sqlite3');
 const validator = require('validator');
-const assert = require('assert');
+const opn = require('opn');
 
 function download_page(link, method)
 {
@@ -512,54 +515,59 @@ var full = "";
 
 function generate_html()
 {
-    db.all
-    (
-        `
-        SELECT
-            channel_id,
-            channel_name,
-            video_id,
-            video_title,
-            video_published,
-            video_description
-        FROM
-        subscriptions
-            INNER JOIN
-        (SELECT * FROM videos ORDER BY video_published DESC) vi
-        ON subscriptions.channel_id_id = vi.channel_id_id
-        `,
-        (err, rows) =>
-        {
-            if(err) console.log('Error:\n', err);
-            else
+    return new Promise((resolve, reject) =>
+    {
+        db.all
+        (
+            `
+            SELECT
+                channel_id,
+                channel_name,
+                video_id,
+                video_title,
+                video_published,
+                video_description
+            FROM
+            subscriptions
+                INNER JOIN
+            (SELECT * FROM videos ORDER BY video_published DESC) vi
+            ON subscriptions.channel_id_id = vi.channel_id_id
+            `,
+            (err, rows) =>
             {
-                full = html_pre;
-                for(let i = 0; i < rows.length; ++i)
+                if(err) reject(err);
+                else
                 {
-                    full += section_a;
-                    full += rows[i].video_id; // id
-                    full += section_b;
-                    full += section_c;
-                    full += rows[i].video_id;
-                    full += section_d;
-                    full += rows[i].video_id;
-                    full += section_e;
-                    full += rows[i].video_title; // title
-                    full += section_f;
+                    full = html_pre;
+                    for(let i = 0; i < rows.length; ++i)
+                    {
+                        full += section_a;
+                        full += rows[i].video_id; // id
+                        full += section_b;
+                        full += section_c;
+                        full += rows[i].video_id;
+                        full += section_d;
+                        full += rows[i].video_id;
+                        full += section_e;
+                        full += rows[i].video_title; // title
+                        full += section_f;
+                    }
+                    full += html_post;
+                    fs.writeFileSync('./yt_view_subscription.html', full);
+                    resolve();
                 }
-                full += html_post;
-                console.log(full);
             }
-        }
-    );
+        );
+    });
 }
 
 /// ----------------------------------
 
+/*
 open_db_global()
 .then(() =>
 {
-    generate_html();
+    return generate_html();
     // return download_page('https://www.youtube.com/feeds/videos.xml?channel_id=UCO1cgjhGzsSYb1rsB4bFe4Q');
     // return download_and_save_feed();
     // return subscribe('https://www.youtube.com/watch?v=osxcTtvrs1g');
@@ -573,3 +581,4 @@ open_db_global()
 {
     console.log('Error:\n', err);
 });
+*/

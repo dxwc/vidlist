@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/dxwc/youtube_subscriber.js#readme",
   "dependencies": {
+    "opn": "5.1.0",
     "sqlite3": "3.1.13",
     "validator": "9.1.1"
   }
