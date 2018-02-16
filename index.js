@@ -154,7 +154,7 @@ function open_db_global()
 {
     return new Promise((resolve, reject) =>
     {
-        global.db = new sqlite3.Database('youtube_subscriber.dat', (err) =>
+        global.db = new sqlite3.Database('youtube_subscription.data', (err) =>
         {
             if(err) reject(err);
             sql_promise
@@ -217,7 +217,7 @@ function open_db_global()
     })
 }
 
-let db = new sqlite3.Database('youtube_subscriber.dat'); // delete me
+// let db = new sqlite3.Database('youtube_subscription.data'); // delete me
 
 function subscribe(youtube_url)
 {
@@ -280,32 +280,7 @@ function keep_db_shorter()
             DELETE
                 FROM videos
             WHERE
-                video_published < ${(new Date().getTime()/1000) - 1296000}
-`
-// `
-// DELETE
-//     FROM videos
-// WHERE
-//     video_published IN
-//     (
-//         SELECT
-//             video_published FROM videos
-//         WHERE
-//             channel_id_id IN
-//             (
-//                 SELECT channel_id_id
-//                     FROM videos
-//                 WHERE
-//                     video_published < ${(new Date().getTime()/1000) - 1296000}
-//                 GROUP BY
-//                     channel_id_id
-//                 HAVING count(*) > 10
-//             )
-//             AND
-//             video_published < ${(new Date().getTime()/1000) - 1296000}
-//     )
-// `
-            ,
+                video_published < ${(new Date().getTime()/1000) - 1296000}`,
             (err) =>
             {
                 if(err) reject(err);
@@ -541,7 +516,7 @@ const html_pre =
             color: #333;
             font-weight: bold;
         }
-        .contain
+        .container
         {
             float: left;
             padding-left: 2%;
@@ -565,7 +540,7 @@ const html_post =
 `;
 const section_a =
 `
-    <div class='contain'>
+    <div class='container'>
         <a href='https://www.youtube.com/embed/`;
 const section_b = `?rel=0'>`;
 const section_c =
@@ -624,7 +599,7 @@ function generate_html()
                         full += section_f;
                     }
                     full += html_post;
-                    fs.writeFileSync('./yt_view_subscription.html', full);
+                    fs.writeFileSync('yt_view_subscriptions.html', full);
                     resolve();
                 }
             }
@@ -725,7 +700,7 @@ open_db_global()
     if(opt.options.open)
     {
         console.log('--Opening HTML to your default browser');
-        opn('./yt_view_subscription.html')
+        opn('yt_view_subscriptions.html')
         .catch((err) =>
         {
                 console.log('=>Error opening HTML:\n', err);
