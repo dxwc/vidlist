@@ -269,6 +269,52 @@ function subscribe(youtube_url)
     });
 }
 
+function keep_db_shorter()
+// delete all video data that are 15 days or more older
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.run
+        (
+            `
+            DELETE
+                FROM videos
+            WHERE
+                video_published < ${(new Date().getTime()/1000) - 1296000}
+`
+// `
+// DELETE
+//     FROM videos
+// WHERE
+//     video_published IN
+//     (
+//         SELECT
+//             video_published FROM videos
+//         WHERE
+//             channel_id_id IN
+//             (
+//                 SELECT channel_id_id
+//                     FROM videos
+//                 WHERE
+//                     video_published < ${(new Date().getTime()/1000) - 1296000}
+//                 GROUP BY
+//                     channel_id_id
+//                 HAVING count(*) > 10
+//             )
+//             AND
+//             video_published < ${(new Date().getTime()/1000) - 1296000}
+//     )
+// `
+            ,
+            (err) =>
+            {
+                if(err) reject(err);
+                else resolve();
+            }
+        );
+    });
+}
+
 function list_subscriptions(names_only)
 {
     return new Promise((resolve, reject) =>
@@ -649,7 +695,9 @@ open_db_global()
         return subscribe(opt.options.subscribe);
     else if(opt.options.update || opt.options.generate || opt.options.open)
     {
-        if(opt.options.update) return download_and_save_feed();
+        if(opt.options.update)
+            return keep_db_shorter()
+                  .then(() => download_and_save_feed());
     }
     else return true;
 })
