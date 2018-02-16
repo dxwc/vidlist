@@ -526,51 +526,61 @@ function download_and_save_feed()
 }
 
 const html_pre =
-    "<!DOCTYPE html>" +
-    "\n<html>" +
-    "\n<head>" +
-    "\n<meta charset='UTF-8'>" +
-    "\n<title>Subscription</title>" +
-    "\n<style type=\"text/css\">" +
-    "\nbody{background-color: #B4B4B4;}" +
-    "\nh2{font-size: 100%; overflow: hidden;}" +
-    "\nimg{width: 100%;}" +
-    "\na{" +
-    "\ntext-decoration: none;" +
-    "\ncolor: #333;" +
-    "\nfont-weight: bold;" +
-    "\n}" +
-    "\n#contain" +
-    "\n{" +
-    "\nfloat: left;" +
-    "\npadding-left: 2%;" +
-    "\npadding-right: 2%;" +
-    "\nwidth: 19.77%;" +
-    "\nbackground-color: #ddd;" +
-    "\npadding-top: 2%;" +
-    "\nmargin-left: 1%;" +
-    "\nmargin-bottom: 1%;" +
-    "\nheight: 298px;" +
-    "\noverflow: auto;" +
-    "\n}" +
-    "\n</style>" +
-    "\n</head>" +
-    "\n<body>\n\n";
+`<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <title>Subscriptions</title>
+    <style type='text/css'>
+        body { background-color: #B4B4B4; }
+        h2 { font-size: 100%; overflow: hidden; }
+        img { width: 100%; }
+        a
+        {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .contain
+        {
+            float: left;
+            padding-left: 2%;
+            padding-right: 2%;
+            width: 19.77%;
+            background-color: #ddd;
+            padding-top: 2%;
+            margin-left: 1%;
+            margin-bottom: 1%;
+            height: 298px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+`
 const html_post =
-    "\n</body>" +
-    "\n</html>";
+`
+</body>
+</html>
+`;
 const section_a =
-    "\n<div id=\"contain\">" +
-    "\n<a href=\"https://www.youtube.com/embed/";
-const section_b = "?rel=0\">";
+`
+    <div class='contain'>
+        <a href='https://www.youtube.com/embed/`;
+const section_b = `?rel=0'>`;
 const section_c =
-    "\n<img src=\"https://img.youtube.com/vi/";
-const section_d =
-    "/mqdefault.jpg\" >" +
-    "</a>" +
-    "\n<a href=\"https://www.youtube.com/watch?v=";
-const section_e = "\">\n<h2>";
-const section_f = "</h2></a>\n</div>\n\n";
+`
+            <img src='https://img.youtube.com/vi/`;
+const section_d = `/mqdefault.jpg'>
+        </a>
+        <a href='https://www.youtube.com/watch?v=`;
+const section_e = `'>
+            <h2>`;
+const section_f = `</h2>
+        </a>
+    </div>
+
+`;
 
 let full = "";
 
@@ -696,8 +706,8 @@ open_db_global()
     else if(opt.options.update || opt.options.generate || opt.options.open)
     {
         if(opt.options.update)
-            return keep_db_shorter()
-                  .then(() => download_and_save_feed());
+                return download_and_save_feed()
+                .then(() => keep_db_shorter());
     }
     else return true;
 })
