@@ -6,6 +6,7 @@ const sqlite3   = require('sqlite3');
 const validator = require('validator');
 const opn       = require('opn');
 const Getopt    = require('node-getopt');
+const xss       = require('xss-filters');
 
 function download_page(link, method)
 {
@@ -556,14 +557,14 @@ function generate_html()
                     for(let i = 0; i < rows.length; ++i)
                     {
                         full += section_a;
-                        full += rows[i].video_id; // id
+                        full += xss.inHTMLData(rows[i].video_id); // id
                         full += section_b;
                         full += section_c;
-                        full += rows[i].video_id;
+                        full += xss.inHTMLData(rows[i].video_id);
                         full += section_d;
-                        full += rows[i].video_id;
+                        full += xss.inHTMLData(rows[i].video_id);
                         full += section_e;
-                        full += rows[i].video_title; // title
+                        full += xss.inHTMLData(rows[i].video_title); // title
                         full += section_f;
                     }
                     full += html_post;
