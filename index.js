@@ -1,11 +1,11 @@
-const https = require('https');
-const fs = require('fs');
-const assert = require('assert');
+const https     = require('https');
+const fs        = require('fs');
+const assert    = require('assert');
 
-const sqlite3 = require('sqlite3');
+const sqlite3   = require('sqlite3');
 const validator = require('validator');
-const opn = require('opn');
-const Getopt = require('node-getopt');
+const opn       = require('opn');
+const Getopt    = require('node-getopt');
 
 function download_page(link, method)
 {
@@ -174,7 +174,8 @@ function open_db_global()
                     `
                     CREATE TABLE IF NOT EXISTS videos
                     (
-                        channel_id_id     INTEGER REFERENCES subscriptions(channel_id_id),
+                        channel_id_id     INTEGER REFERENCES
+                                          subscriptions(channel_id_id),
                         video_id          TEXT PRIMARY KEY,
                         video_title       TEXT,
                         video_published   INTEGER,
@@ -343,7 +344,10 @@ function parse_and_save_data(page, ch_id_id)
 
             a_title = page.substring(v_title_pre+7, v_title_post);
             a_id = page.substring(v_id_pre+12, v_id_post);
-            a_pubDate = new Date(page.substring(v_published_pre+11, v_published_post)).getTime()/1000;
+            a_pubDate = new Date
+                        (
+                            page.substring(v_published_pre+11, v_published_post)
+                        ).getTime()/1000;
             a_description = page.substring(v_description_pre+19, v_description_post);
 
             a_title = validator.escape(a_title);
@@ -521,7 +525,7 @@ const section_d =
 const section_e = "\">\n<h2>";
 const section_f = "</h2></a>\n</div>\n\n";
 
-var full = "";
+let full = "";
 
 function generate_html()
 {
