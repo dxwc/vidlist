@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start" : "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "repository": {
     "type": "git",
@@ -17,10 +18,10 @@
   },
   "homepage": "https://github.com/dxwc/youtube_subscriber.js#readme",
   "dependencies": {
-    "node-getopt": "0.2.3",
-    "opn": "5.1.0",
-    "sqlite3": "3.1.13",
-    "validator": "9.1.1",
+    "node-getopt": "^0.2.3",
+    "opn": "^5.1.0",
+    "sqlite3": "^3.1.13",
+    "validator": "^9.1.1",
     "xss-filters": "^1.2.7"
   }
 }
