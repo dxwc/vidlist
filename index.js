@@ -475,12 +475,17 @@ function download_and_save_feed()
                 else
                 {
                     let all_downloads = Promise.resolve();
+                    global.remaining = rows.length;
 
                     for(let i = 0; i < rows.length; ++i)
                     {
                         all_downloads = all_downloads
                         .then(() =>
                         {
+                            if(global.prog)
+                                process.stdout.write
+(`: ${global.remaining} channel download and processing remaining\r`);
+
                             return download_page
                             (
                                 `https://www.youtube.com/feeds/videos.xml?channel_id=`
@@ -490,6 +495,10 @@ function download_and_save_feed()
                             {
                                 return parse_and_save_data(
                                     page, rows[i].channel_id_id);
+                            })
+                            .then(() =>
+                            {
+                                global.remaining -= 1;
                             });
                         });
                     }
@@ -630,9 +639,10 @@ function close_everything(code)
 let getopt = new Getopt([
   ['s', 'subscribe=ARG', 'Subscribe to youtube channel given a video/channel url'],
   ['u', 'update', 'Fetch feeds for subscribed channel and update video database'],
-  ['g', 'generate', 'Generate yt_view_subscription.html in current directory'],
+  ['g', 'generate', 'Generate yt_view_subscriptions.html'],
   ['o', 'open', 'Open generated html file in default browser'],
   ['l', 'list', 'Print list of your subscrbed channels'],
+  ['p', 'progress', 'Prints progress information'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
@@ -643,19 +653,27 @@ let getopt = new Getopt([
 
 NOTE:
 
-Options to update, generate and open can be combined. For all other
-options only the first will execute.
+1. Option to show progress can be added with any other commands
+   but only effective with update
+2. Options to update, generate and open can be combined.For all
+   other options only the first will execute.
+3. Source code, data and html are all located in a directory on
+   your computer at: ${__dirname}
 
 EXAMPLE:
 
-#Subscribe to a youtube chanel:
+Subscribe to a youtube channel:
+
 node index.js --subscribe https://www.youtube.com/watch?v=EeNiqKNtpAA
 
-#List your subscriptions:
+List your subscriptions:
+
 node index.js --list
 
-#Update feed, Generate HTML and Open the HTML in your default browser:
-node index.js -ugo
+Pull update from channel feed, show update progress, generate HTML
+and open the HTML with your default browser:
+
+node index.js -upgo
 `
 )
 .error(() =>
@@ -674,6 +692,8 @@ if(process.argv.length <= 2 || opt.options.help)
 open_db_global()
 .then(() =>
 {
+    if(opt.options.progress) global.prog = true;
+
     if(opt.options.list)
         return list_subscriptions();
     else if(opt.options.subscribe)
@@ -689,7 +709,12 @@ open_db_global()
 .then(() =>
 {
     if(opt.options.list || opt.options.subscribe) return close_everything(0);
-    else if(opt.options.update) console.log('--Updated feed');
+    else if(opt.options.update)
+    {
+        if(global.prog)
+            process.stdout.write(`                                             \r`);
+        console.log('--Fetched updates');
+    }
 
     if(opt.options.generate) return generate_html();
     else return true;
@@ -699,7 +724,7 @@ open_db_global()
     if(opt.options.generate) console.log('--Generated HTML');
     if(opt.options.open)
     {
-        console.log('--Opening HTML to your default browser');
+        console.log('--Opening HTML with your default web browser');
         opn('yt_view_subscriptions.html')
         .catch((err) =>
         {
