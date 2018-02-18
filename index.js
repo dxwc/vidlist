@@ -65,7 +65,7 @@ function parse_channel_id(html_page)
             )
         )
         {
-            console.log('Extracted channel id contains invalid charactes.');
+            console.error('Extracted channel id contains invalid charactes.');
             return null;
         }
         else
@@ -205,9 +205,9 @@ function open_db_global()
 function subscribe(youtube_url)
 {
     if(typeof(youtube_url) !== 'string' || !is_valid_yt_url(youtube_url))
-        return console.log('Not a valid youtube URL');
+        return console.error('Not a valid youtube URL');
     else if(typeof(db) === undefined)
-        return console.log(`Database has not been opened`);
+        return console.error(`Database has not been opened`);
 
     let ch_id = undefined;
     let ch_name = undefined;
@@ -234,21 +234,21 @@ function subscribe(youtube_url)
                 if(result && result.errno)
                 {
                     if(result.errno == 19)
-                        console.log(
+                        console.info(
                             `You were already subscribed to '${ch_name}' (${ch_id})`);
                     else
-                        console.log(result);
+                        console.info(result);
                 }
                 else if(result === null)
-                    console.log(`Subscribed to '${ch_name}' (${ch_id})`);
+                    console.info(`Subscribed to '${ch_name}' (${ch_id})`);
                 else
-                    console.log('Undefined error');
+                    console.error('Undefined error');
             }
         );
     })
     .catch((err) =>
     {
-        console.log('Error:\n', err);
+        console.error('Error:\n', err);
     });
 }
 
@@ -289,11 +289,11 @@ function list_subscriptions(names_only)
                 {
                     if(names_only)
                         for(let i = 0; i < rows.length; ++i)
-                            console.log(
+                            console.info(
                             validator.unescape(rows[i].channel_name));
                     else
                         for(let i = 0; i < rows.length; ++i)
-                            console.log(
+                            console.info(
                         rows[i].channel_id, validator.unescape(rows[i].channel_name));
                     resolve();
                 }
@@ -605,7 +605,7 @@ function close_everything(code)
     {
         db.close((err) =>
         {
-            if(err) { console.log('=>Error:\n', err); process.exit(1) }
+            if(err) { console.error('=>Error:\n', err); process.exit(1) }
             else resolve();
         });
     })
@@ -696,7 +696,7 @@ open_db_global()
     {
         if(global.prog)
             process.stdout.write(`                                             \r`);
-        console.log('--Fetched updates');
+        console.info('--Fetched updates');
     }
 
     if(opt.options.generate) return generate_html();
@@ -704,14 +704,14 @@ open_db_global()
 })
 .then(() =>
 {
-    if(opt.options.generate) console.log('--Generated HTML');
+    if(opt.options.generate) console.info('--Generated HTML');
     if(opt.options.open)
     {
-        console.log('--Opening HTML with your default web browser');
+        console.info('--Opening HTML with your default web browser');
         opn('yt_view_subscriptions.html')
         .catch((err) =>
         {
-                console.log('=>Error opening HTML:\n', err);
+                console.error('=>Error opening HTML:\n', err);
                 return close_everything(1);
         });
     }
@@ -719,6 +719,6 @@ open_db_global()
 })
 .catch((err) =>
 {
-    console.log('=>There was an error in operation:\n', err);
+    console.error('=>There was an error in operation:\n', err);
     close_everything(1);
 });
