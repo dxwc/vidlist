@@ -12,33 +12,18 @@ function download_page(link, method)
 {
     return new Promise((resolve, reject) =>
     {
+        let data = '';
         https.get
         (
             link,
             (res) =>
             {
-                let data;
-
-                res.on('data', (chunk) =>
-                {
-                    data += chunk;
-                });
-
-                res.on('end', () =>
-                {
-                    resolve(data);
-                });
-
-                res.on('error', (err) =>
-                {
-                    reject(err);
-                });
+                res.on('data', (chunk) => data += chunk);
+                res.on('end', () => resolve(data));
+                res.on('error', (err) => reject(err));
             }
         )
-        .on('error', (err) =>
-        {
-            reject(err);
-        });
+        .on('error', (err) => reject(err));
     });
 }
 
@@ -59,7 +44,7 @@ function is_valid_yt_url(url)
     }
     catch(err)
     {
-        console.log('Error', err);
+        console.error('Error', err);
     }
 
     return false;
@@ -138,8 +123,7 @@ function sql_promise(command)
     {
         db.run
         (
-            command
-            ,
+            command,
             (result, err) =>
             {
                 if(result && result.errno) reject(result);
@@ -550,7 +534,7 @@ const html_post =
 const section_a =
 `
     <div class='container'>
-        <a href='https://www.youtube.com/embed/`;
+        <a href='https://www.youtube-nocookie.com/embed/`;
 const section_b = `?rel=0'>`;
 const section_c =
 `
