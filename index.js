@@ -32,10 +32,10 @@ function is_valid_yt_url(url)
     {
         if
         (
-            url.match(/.+www.youtube.com\/watch\?v=.+/) !== null ||
-            url.match(/.+www.youtube.com\/channel\/.+/) !== null ||
-            url.match(/.+www.youtube.com\/user\/.+/)    !== null ||
-            url.match(/.+youtu.be\/...........+/)       !== null
+            url.match(/https:\/\/www.youtube.com\/watch\?v=.+/) !== null ||
+            url.match(/https:\/\/www.youtube.com\/channel\/.+/) !== null ||
+            url.match(/https:\/\/www.youtube.com\/user\/.+/)    !== null ||
+            url.match(/https:\/\/youtu.be\/...........+/)       !== null
         )
         {
             return true;
