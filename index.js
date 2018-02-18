@@ -467,7 +467,7 @@ function download_and_save_feed()
                         {
                             if(global.prog)
                                 process.stdout.write
-(`: ${global.remaining} channel download and processing remaining\r`);
+(`: ${global.remaining} channel's download and processing remaining\r`);
 
                             return download_page
                             (
@@ -695,7 +695,7 @@ open_db_global()
     else if(opt.options.update)
     {
         if(global.prog)
-            process.stdout.write(`                                             \r`);
+            process.stdout.write(`                                               \r`);
         console.info('--Fetched updates');
     }
 
