@@ -1,10 +1,9 @@
-const https     = require('https');
 const fs        = require('fs');
-const assert    = require('assert');
+const https     = require('https');
 
+const opn       = require('opn');
 const sqlite3   = require('sqlite3');
 const validator = require('validator');
-const opn       = require('opn');
 const Getopt    = require('node-getopt');
 const xss       = require('xss-filters');
 
