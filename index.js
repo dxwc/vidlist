@@ -492,7 +492,32 @@ function download_and_save_feed()
     });
 }
 
-const html_pre =
+function generate_html()
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.all
+        (
+            `
+            SELECT
+                channel_id,
+                channel_name,
+                video_id,
+                video_title,
+                video_published,
+                video_description
+            FROM
+            subscriptions
+                INNER JOIN
+            (SELECT * FROM videos ORDER BY video_published DESC) vi
+            ON subscriptions.channel_id_id = vi.channel_id_id
+            `,
+            (err, rows) =>
+            {
+                if(err) reject(err);
+                else
+                {
+                    let full =
 `<!DOCTYPE html>
 <html>
 <head>
@@ -525,72 +550,28 @@ const html_pre =
 </head>
 <body>
 `
-const html_post =
+                    for(let i = 0; i < rows.length; ++i)
+                    {
+                        full +=
+`
+    <div class='container' title='${xss.inHTMLData(rows[i].channel_name)}'>
+        <a href='https://www.youtube-nocookie.com/embed/\
+${xss.inHTMLData(rows[i].video_id)}?rel=0'>
+            <img src='https://img.youtube.com/vi/\
+${xss.inHTMLData(rows[i].video_id)}/mqdefault.jpg'>
+        </a>
+        <a href='https://www.youtube.com/watch?v=\
+${xss.inHTMLData(rows[i].video_id)}'>
+            <h2 title='${xss.inHTMLData(rows[i].video_description)}'>\
+${xss.inHTMLData(rows[i].video_title)}</h2>
+        </a>
+    </div>`
+                    }
+                    full +=
 `
 </body>
 </html>
 `;
-const section_a =
-`
-    <div class='container'>
-        <a href='https://www.youtube-nocookie.com/embed/`;
-const section_b = `?rel=0'>`;
-const section_c =
-`
-            <img src='https://img.youtube.com/vi/`;
-const section_d = `/mqdefault.jpg'>
-        </a>
-        <a href='https://www.youtube.com/watch?v=`;
-const section_e = `'>
-            <h2>`;
-const section_f = `</h2>
-        </a>
-    </div>
-
-`;
-
-let full = "";
-
-function generate_html()
-{
-    return new Promise((resolve, reject) =>
-    {
-        db.all
-        (
-            `
-            SELECT
-                channel_id,
-                channel_name,
-                video_id,
-                video_title,
-                video_published,
-                video_description
-            FROM
-            subscriptions
-                INNER JOIN
-            (SELECT * FROM videos ORDER BY video_published DESC) vi
-            ON subscriptions.channel_id_id = vi.channel_id_id
-            `,
-            (err, rows) =>
-            {
-                if(err) reject(err);
-                else
-                {
-                    full = html_pre;
-                    for(let i = 0; i < rows.length; ++i)
-                    {
-                        full += section_a;
-                        full += xss.inHTMLData(rows[i].video_id); // id
-                        full += section_b;
-                        full += section_c;
-                        full += xss.inHTMLData(rows[i].video_id);
-                        full += section_d;
-                        full += xss.inHTMLData(rows[i].video_id);
-                        full += section_e;
-                        full += xss.inHTMLData(rows[i].video_title); // title
-                        full += section_f;
-                    }
-                    full += html_post;
                     fs.writeFileSync('yt_view_subscriptions.html', full);
                     resolve();
                 }
