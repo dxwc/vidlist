@@ -42,4 +42,6 @@ youtube/google account needed.
 
 # The Bad
 
-Currenly it is very slow for long list of subscriptions. Here's a faster version written in [C++](https://github.com/dxwc/youtube_subscriber) but that has no security checks and only runs on linux.
+Currenly it is very slow for long list of subscriptions.
+**UPDATE: The mistake causing the slowness has been identified, the speed will be improved on the next push**
+Here's a faster version written in [C++](https://github.com/dxwc/youtube_subscriber) but that has no security checks and only runs on linux.
