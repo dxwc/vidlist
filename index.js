@@ -289,8 +289,11 @@ function list_subscriptions(names_only)
                 {
                     if(names_only)
                         for(let i = 0; i < rows.length; ++i)
-                            console.info(
-                            validator.unescape(rows[i].channel_name));
+                            console.info
+                            (
+                                String(rows[i].channel_id_id) + '.',
+                                validator.unescape(rows[i].channel_name)
+                            );
                     else
                         for(let i = 0; i < rows.length; ++i)
                             console.info(
@@ -580,6 +583,61 @@ ${xss.inHTMLData(rows[i].video_title)}</h2>
     });
 }
 
+function remove_subscription()
+{
+    return list_subscriptions(true)
+    .then(() =>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            let rl = require('readline').createInterface
+            ({
+                input: process.stdin,
+                output: process.stdout
+            });
+
+            rl.question('Enter the channel number you wish to remove: ', (answer) =>
+            {
+                let channel_number;
+                if(validator.isInt(answer))
+                {
+                    channel_number = Number(answer);
+                    resolve
+                    (
+                        sql_promise
+                        (
+                            `
+                            DELETE FROM videos
+                            WHERE
+                                channel_id_id=${channel_number}
+                            `
+                        )
+                        .then(() =>
+                        {
+                            return sql_promise
+                            (
+                                `
+                                DELETE FROM subscriptions
+                                WHERE
+                                    channel_id_id=${channel_number}
+                                `
+                            );
+                        })
+                        .then(() =>
+                        {
+                            console.info
+                            (
+                                '--If it was in subscription list',
+                                'it has now been successfully removed');
+                        })
+                    );
+                }
+                else reject('Invalid input, not an integer');
+            });
+        });
+    });
+}
+
 function close_everything(code)
 {
     return new Promise((resolve, reject) =>
@@ -607,6 +665,7 @@ let getopt = new Getopt([
   ['o', 'open', 'Open generated html file in default browser'],
   ['l', 'list', 'Print list of your subscrbed channels'],
   ['p', 'progress', 'Prints progress information'],
+  ['r', 'remove', 'Remove a subscription'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
@@ -620,15 +679,21 @@ NOTE:
 1. Option to show progress can be added with any other commands
    but only effective with update
 2. Options to update, generate and open can be combined.For all
-   other options only the first will execute.
+   other options combining will produce unexpeted results.
 3. Source code, data and html are all located in a directory on
    your computer at: ${__dirname}
+4. Bug report goes here:
+   https://github.com/dxwc/youtube_subscriber.js/issues
 
 EXAMPLE:
 
 Subscribe to a youtube channel:
 
 node index.js --subscribe https://www.youtube.com/watch?v=EeNiqKNtpAA
+
+Remove a subscription:
+
+node index.js --remove
 
 List your subscriptions:
 
@@ -660,6 +725,8 @@ open_db_global()
 
     if(opt.options.list)
         return list_subscriptions();
+    if(opt.options.remove)
+        return remove_subscription();
     else if(opt.options.subscribe)
         return subscribe(opt.options.subscribe);
     else if(opt.options.update || opt.options.generate || opt.options.open)
@@ -672,7 +739,15 @@ open_db_global()
 })
 .then(() =>
 {
-    if(opt.options.list || opt.options.subscribe) return close_everything(0);
+    if
+    (
+        opt.options.list ||
+        opt.options.subscribe ||
+        opt.options.remove
+    )
+    {
+        return close_everything(0);
+    }
     else if(opt.options.update)
     {
         if(global.prog)
