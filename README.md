@@ -25,7 +25,7 @@ youtube/google account needed.
         + `alias sub='cd /location/to/cloned/directory; clear; node index.js --subscribe "$@"'`
             + Now to use, run from anywhere: `sub <a youtube video or channel url>`
 
-# Features
+# The Good
 
 + Doesn't need any google account/API key
 + Latest videos are always on top (unlike youtube)
@@ -39,3 +39,7 @@ youtube/google account needed.
 + Hovering a video tile on generated page shows channel name it belongs to
 + Hovering a video title on generate page shows video description
 + (new) Can now remove a subscription with `--remove` flag
+
+# The Bad
+
+Currenly it is very slow for long list of subscriptions. Here's a faster version written in [C++](https://github.com/dxwc/youtube_subscriber) but that has no security checks and only runs on linux.
