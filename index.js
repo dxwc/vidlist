@@ -730,7 +730,7 @@ open_db_global()
 
     if(opt.options.list)
         return list_subscriptions();
-    if(opt.options.remove)
+    else if(opt.options.remove)
         return remove_subscription();
     else if(opt.options.subscribe)
         return subscribe(opt.options.subscribe);
