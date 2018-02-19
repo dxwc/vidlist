@@ -38,4 +38,8 @@ youtube/google account needed.
   if default isn't preferable
 + Hovering a video tile on generated page shows channel name it belongs to
 + Hovering a video title on generate page shows video description
-+ (new) Can now remove a subscription with `--remove` flag
++ (new) Can now remove subscription with `--remove` flag
+
+# Changes
+
++ A bug fixed that was causing unpredictable speed issue during parsing and saving
