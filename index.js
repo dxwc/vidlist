@@ -306,6 +306,54 @@ function list_subscriptions(names_only)
 
 }
 
+function insert_entry
+(
+    ch_id_id,
+    a_id,
+    a_title,
+    a_pubDate,
+    a_description
+)
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.run
+        (
+            `
+            INSERT INTO videos
+            (
+                channel_id_id,
+                video_id,
+                video_title,
+                video_published,
+                video_description
+            )
+            VALUES
+            (
+                ${ch_id_id},
+                '${a_id}',
+                '${a_title}',
+                ${a_pubDate},
+                '${a_description}'
+            );
+            `,
+            (result, err) =>
+            {
+                if
+                (
+                    result && typeof(result.errno) === 'number' &&
+                    result.errno !== 19
+                )
+                    return reject(result);
+                else
+                {
+                    return resolve();
+                }
+            }
+        );
+    });
+}
+
 function parse_and_save_data(page, ch_id_id)
 {
     let v_id_pre = -1;
@@ -321,6 +369,8 @@ function parse_and_save_data(page, ch_id_id)
     let a_title;
     let a_pubDate;
     let a_description;
+
+    let promise_chain = Promise.resolve();
 
     return new Promise((resolve, reject) =>
     {
@@ -373,74 +423,28 @@ function parse_and_save_data(page, ch_id_id)
             { reject('</entry> not found'); break; }
             page = page.substring(page.indexOf('</entry>'));
 
-            if(page.indexOf('<entry>') == -1)
+            promise_chain =
+            promise_chain
+            .then(() =>
             {
-                db.run
+                return insert_entry
                 (
-                    `
-                    INSERT INTO videos
-                    (
-                        channel_id_id,
-                        video_id,
-                        video_title,
-                        video_published,
-                        video_description
-                    )
-                    VALUES
-                    (
-                        ${ch_id_id},
-                        '${a_id}',
-                        '${a_title}',
-                        ${a_pubDate},
-                        '${a_description}'
-                    );
-                    `,
-                    (result, err) =>
-                    {
-                        if
-                        (
-                            result && typeof(result.errno) === 'number' &&
-                            result.errno !== 19
-                        )
-                            reject(result);
-                        else
-                            resolve();
-                    }
+                    ch_id_id,
+                    a_id,
+                    a_title,
+                    a_pubDate,
+                    a_description
                 );
+            });
+
+            if(page.indexOf('<entry>') === -1)
+            {
+                promise_chain = promise_chain.then(() =>
+                {
+                    return resolve();
+                });
+
                 break;
-            }
-            else
-            {
-                db.run
-                (
-                    `
-                    INSERT INTO videos
-                    (
-                        channel_id_id,
-                        video_id,
-                        video_title,
-                        video_published,
-                        video_description
-                    )
-                    VALUES
-                    (
-                        ${ch_id_id},
-                        '${a_id}',
-                        '${a_title}',
-                        ${a_pubDate},
-                        '${a_description}'
-                    );
-                    `,
-                    (result, err) =>
-                    {
-                        if
-                        (
-                            result && typeof(result.errno) === 'number' &&
-                            result.errno !== 19
-                        )
-                            reject(result);
-                    }
-                );
             }
         }
     });
