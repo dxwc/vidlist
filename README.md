@@ -36,5 +36,6 @@ youtube/google account needed.
 + Extracted data goes through basic validation and filters for XSS attack
 + It is easy to see where in the `index.js` to edit to change CSS to one's liking
   if default isn't preferable
-+ (new) Hovering a video tile on generated page shows channel name it belongs to
-+ (new) Hovering a video title on generate page shows video description
++ Hovering a video tile on generated page shows channel name it belongs to
++ Hovering a video title on generate page shows video description
++ (new) Can now remove a subscription with `--remove` flag
