@@ -9,6 +9,7 @@ const xss       = require('xss-filters');
 
 function download_page(link, method)
 {
+    console.time('download_page');
     return new Promise((resolve, reject) =>
     {
         let data = '';
@@ -18,7 +19,8 @@ function download_page(link, method)
             (res) =>
             {
                 res.on('data', (chunk) => data += chunk);
-                res.on('end', () => resolve(data));
+                res.on('end', () =>
+                { console.timeEnd('download_page'); resolve(data); });
                 res.on('error', (err) => reject(err));
             }
         )
@@ -306,8 +308,57 @@ function list_subscriptions(names_only)
 
 }
 
+function insert_entry
+(
+    ch_id_id,
+    a_id,
+    a_title,
+    a_pubDate,
+    a_description
+)
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.run
+        (
+            `
+            INSERT INTO videos
+            (
+                channel_id_id,
+                video_id,
+                video_title,
+                video_published,
+                video_description
+            )
+            VALUES
+            (
+                ${ch_id_id},
+                '${a_id}',
+                '${a_title}',
+                ${a_pubDate},
+                '${a_description}'
+            );
+            `,
+            (result, err) =>
+            {
+                if
+                (
+                    result && typeof(result.errno) === 'number' &&
+                    result.errno !== 19
+                )
+                    return reject(result);
+                else
+                {
+                    return resolve();
+                }
+            }
+        );
+    });
+}
+
 function parse_and_save_data(page, ch_id_id)
 {
+    console.time('parse_and_save_data');
     let v_id_pre = -1;
     let v_id_post = -1;
     let v_title_pre = -1;
@@ -321,6 +372,8 @@ function parse_and_save_data(page, ch_id_id)
     let a_title;
     let a_pubDate;
     let a_description;
+
+    let promise_chain = Promise.resolve();
 
     return new Promise((resolve, reject) =>
     {
@@ -373,74 +426,29 @@ function parse_and_save_data(page, ch_id_id)
             { reject('</entry> not found'); break; }
             page = page.substring(page.indexOf('</entry>'));
 
-            if(page.indexOf('<entry>') == -1)
+            promise_chain =
+            promise_chain
+            .then(() =>
             {
-                db.run
+                return insert_entry
                 (
-                    `
-                    INSERT INTO videos
-                    (
-                        channel_id_id,
-                        video_id,
-                        video_title,
-                        video_published,
-                        video_description
-                    )
-                    VALUES
-                    (
-                        ${ch_id_id},
-                        '${a_id}',
-                        '${a_title}',
-                        ${a_pubDate},
-                        '${a_description}'
-                    );
-                    `,
-                    (result, err) =>
-                    {
-                        if
-                        (
-                            result && typeof(result.errno) === 'number' &&
-                            result.errno !== 19
-                        )
-                            reject(result);
-                        else
-                            resolve();
-                    }
+                    ch_id_id,
+                    a_id,
+                    a_title,
+                    a_pubDate,
+                    a_description
                 );
+            });
+
+            if(page.indexOf('<entry>') === -1)
+            {
+                promise_chain = promise_chain.then(() =>
+                {
+                    console.timeEnd('parse_and_save_data');
+                    return resolve();
+                });
+
                 break;
-            }
-            else
-            {
-                db.run
-                (
-                    `
-                    INSERT INTO videos
-                    (
-                        channel_id_id,
-                        video_id,
-                        video_title,
-                        video_published,
-                        video_description
-                    )
-                    VALUES
-                    (
-                        ${ch_id_id},
-                        '${a_id}',
-                        '${a_title}',
-                        ${a_pubDate},
-                        '${a_description}'
-                    );
-                    `,
-                    (result, err) =>
-                    {
-                        if
-                        (
-                            result && typeof(result.errno) === 'number' &&
-                            result.errno !== 19
-                        )
-                            reject(result);
-                    }
-                );
             }
         }
     });
@@ -470,7 +478,7 @@ function download_and_save_feed()
                         {
                             if(global.prog)
                                 process.stdout.write
-(`: ${global.remaining} channel's download and processing remaining\r`);
+(`: ${global.remaining} channel's download and processing remaining\n`);
 
                             return download_page
                             (
