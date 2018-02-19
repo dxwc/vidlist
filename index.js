@@ -662,14 +662,15 @@ function close_everything(code)
 
 
 
-let getopt = new Getopt([
-  ['s', 'subscribe=ARG', 'Subscribe to youtube channel given a video/channel url'],
-  ['u', 'update', 'Fetch feeds for subscribed channel and update video database'],
+let getopt = new Getopt
+([
+  ['s', 'subscribe=ARG', 'Subscribe with a video/channel url'],
+  ['u', 'update', 'Fetch new updates from channels'],
   ['g', 'generate', 'Generate yt_view_subscriptions.html'],
   ['o', 'open', 'Open generated html file in default browser'],
-  ['l', 'list', 'Print list of your subscrbed channels'],
-  ['p', 'progress', 'Prints progress information'],
-  ['r', 'remove', 'Remove a subscription'],
+  ['l', 'list', 'Print a list of your subscrbed channels'],
+  ['p', 'progress', 'Prints progress information for update'],
+  ['r', 'remove', 'Prompts to remove a subscription'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
@@ -684,8 +685,8 @@ NOTE:
    but only effective with update
 2. Options to update, generate and open can be combined.For all
    other options combining will produce unexpeted results.
-3. Source code, data and html are all located in a directory on
-   your computer at: ${__dirname}
+3. Program is currently running from this directory:
+   ${__dirname}
 4. Bug report goes here:
    https://github.com/dxwc/youtube_subscriber.js/issues
 
