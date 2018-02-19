@@ -751,7 +751,7 @@ open_db_global()
     else if(opt.options.update)
     {
         if(global.prog)
-            process.stdout.write(`                                               \r`);
+            process.stdout.write(`                                                \r`);
         console.info('--Fetched updates');
     }
 
