@@ -9,7 +9,6 @@ const xss       = require('xss-filters');
 
 function download_page(link, method)
 {
-    console.time('download_page');
     return new Promise((resolve, reject) =>
     {
         let data = '';
@@ -19,8 +18,7 @@ function download_page(link, method)
             (res) =>
             {
                 res.on('data', (chunk) => data += chunk);
-                res.on('end', () =>
-                { console.timeEnd('download_page'); resolve(data); });
+                res.on('end', () => resolve(data));
                 res.on('error', (err) => reject(err));
             }
         )
@@ -358,7 +356,6 @@ function insert_entry
 
 function parse_and_save_data(page, ch_id_id)
 {
-    console.time('parse_and_save_data');
     let v_id_pre = -1;
     let v_id_post = -1;
     let v_title_pre = -1;
@@ -444,7 +441,6 @@ function parse_and_save_data(page, ch_id_id)
             {
                 promise_chain = promise_chain.then(() =>
                 {
-                    console.timeEnd('parse_and_save_data');
                     return resolve();
                 });
 
@@ -478,7 +474,7 @@ function download_and_save_feed()
                         {
                             if(global.prog)
                                 process.stdout.write
-(`: ${global.remaining} channel's download and processing remaining\n`);
+(`: ${global.remaining} channel's download and processing remaining\r`);
 
                             return download_page
                             (
