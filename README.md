@@ -38,10 +38,11 @@ youtube/google account needed.
   if default isn't preferable
 + Hovering a video tile on generated page shows channel name it belongs to
 + Hovering a video title on generate page shows video description
-+ (new) Can now remove a subscription with `--remove` flag
++ (new) Can now remove subscription with `--remove` flag
 
 # The Bad
 
-Currenly it is very slow for long list of subscriptions.
-**UPDATE: The mistake causing the slowness has been identified, the speed will be improved on the next push**
-Here's a faster version written in [C++](https://github.com/dxwc/youtube_subscriber) but that has no security checks and only runs on linux.
+Currenly speed appears to be unpredictable(12 seconds vs 1 minute) for average amount of subscriptions. Needs fixing.
+
+I have a [C++ version](https://github.com/dxwc/youtube_subscriber) without the speed
+issue but note that it doesn't have any security checks and it only works on linux.
