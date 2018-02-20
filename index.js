@@ -344,7 +344,9 @@ function insert_entry
                     result && typeof(result.errno) === 'number' &&
                     result.errno !== 19
                 )
+                {
                     return reject(result);
+                }
                 else
                 {
                     return resolve();
@@ -370,11 +372,11 @@ function parse_and_save_data(page, ch_id_id)
     let a_pubDate;
     let a_description;
 
-    let promise_chain = Promise.resolve();
+    let promise_arr = [];
 
     return new Promise((resolve, reject) =>
     {
-        while(true)
+        while(page.indexOf('<entry>') !== -1)
         {
             page = page.substring(page.indexOf('<entry>')-1);
 
@@ -398,7 +400,10 @@ function parse_and_save_data(page, ch_id_id)
                 v_description_pre  === -1 ||
                 v_description_post === -1
             )
+            {
                 reject('tagname/s under entry not found');
+                break;
+            }
 
             a_title = page.substring(v_title_pre+7, v_title_post);
             a_id = page.substring(v_id_pre+12, v_id_post);
@@ -413,40 +418,35 @@ function parse_and_save_data(page, ch_id_id)
             if(!validator.whitelist(
                 a_id.toLowerCase(), 'abcdefghijklmnopqrstuvwxyz1234567890_-'))
             {
-                reject('Extracted id is not of the expected form');
+                return reject('Extracted id is not of the expected form');
                 break;
             }
 
             a_description = validator.escape(a_description);
 
             if(page.indexOf('</entry>') == -1)
-            { reject('</entry> not found'); break; }
+            {
+                return reject('</entry> not found');
+                break;
+            }
+
             page = page.substring(page.indexOf('</entry>'));
 
-            promise_chain =
-            promise_chain
-            .then(() =>
-            {
-                return insert_entry
+            promise_arr.push
+            (
+                insert_entry
                 (
                     ch_id_id,
                     a_id,
                     a_title,
                     a_pubDate,
                     a_description
-                );
-            });
-
-            if(page.indexOf('<entry>') === -1)
-            {
-                promise_chain = promise_chain.then(() =>
-                {
-                    return resolve();
-                });
-
-                break;
-            }
+                )
+            );
         }
+
+        Promise.all(promise_arr).then(() => { return resolve() });
+
     });
 }
 
@@ -756,7 +756,7 @@ open_db_global()
     else if(opt.options.update)
     {
         if(global.prog)
-            process.stdout.write(`                                                \r`);
+        process.stdout.write(`                                                 \r`);
         console.info('--Fetched updates');
     }
 
