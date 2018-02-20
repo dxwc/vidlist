@@ -1,3 +1,5 @@
+**NOTICE: current version of the code has an unidentified bug that removes video. I will try to get it fixed as soon I can**
+
 A simple command line program to subscribe to youtube channels and
 view link/thumbnail of videos in a locally generated html page. No
 youtube/google account needed.
