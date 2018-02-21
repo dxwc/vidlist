@@ -331,25 +331,33 @@ function list_subscriptions(names_only)
             (err, rows) =>
             {
                 if(err) reject(err);
+                if(names_only)
+                {
+
+                    for(let i = 0; i < rows.length; ++i)
+                    {
+                        console.info
+                        (
+                            String(rows[i].channel_id_id) + '.',
+                            validator.unescape(rows[i].channel_name)
+                        );
+                    }
+                }
                 else
                 {
-                    if(names_only)
-                        for(let i = 0; i < rows.length; ++i)
-                            console.info
-                            (
-                                String(rows[i].channel_id_id) + '.',
-                                validator.unescape(rows[i].channel_name)
-                            );
-                    else
-                        for(let i = 0; i < rows.length; ++i)
-                            console.info(
-                        rows[i].channel_id, validator.unescape(rows[i].channel_name));
-                    resolve();
+                    for(let i = 0; i < rows.length; ++i)
+                    {
+                        console.info
+                        (
+                            rows[i].channel_id,
+                            validator.unescape(rows[i].channel_name)
+                        );
+                    }
                 }
+                resolve();
             }
         );
-    })
-
+    });
 }
 
 function insert_entries(values)
@@ -831,6 +839,42 @@ function close_everything(code)
     });
 }
 
+function export_subscription_list()
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.all
+        (
+            `SELECT * FROM subscriptions`,
+            (err, rows) =>
+            {
+                if(err) reject(err);
+
+
+                let subs = [];
+                for(let i = 0; i < rows.length; ++i)
+                {
+                    subs.push
+                    (
+                        [ rows[i].channel_id, rows[i].channel_name ]
+                    );
+                }
+
+                let export_file = path.join(global.dot, 'subscriptions.json');
+                fs.writeFileSync
+                (
+                    export_file,
+                    JSON.stringify(subs)
+                );
+
+                console.info(`--Exported ${export_file}`);
+
+                resolve();
+            }
+        );
+    });
+}
+
 /// ----------------------------------
 
 
@@ -844,6 +888,7 @@ let getopt = new Getopt
   ['l', 'list', 'Print a list of your subscrbed channels'],
   ['p', 'progress', 'Prints progress information for update'],
   ['r', 'remove', 'Prompts to remove a subscription'],
+  ['e', 'export', 'Exports subscription list in a JSON file'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
@@ -909,6 +954,8 @@ open_db_global()
 
     if(opt.options.list)
         return list_subscriptions();
+    else if(opt.options.export)
+        return export_subscription_list();
     else if(opt.options.remove)
         return remove_subscription();
     else if(opt.options.subscribe)
@@ -927,7 +974,8 @@ open_db_global()
     (
         opt.options.list ||
         opt.options.subscribe ||
-        opt.options.remove
+        opt.options.remove ||
+        opt.options.export
     )
     {
         return close_everything(0);
