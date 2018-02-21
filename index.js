@@ -747,7 +747,12 @@ NOTE:
    other options combining will produce unexpeted results.
 3. Program is currently running from this directory:
    ${__dirname}
-4. Bug report goes here:
+4. Variable 'global.old_video_limit_sec' near the top of
+   'index.js' file determines the maximum age of a video
+   (since published) to keep in database for use, any older
+   videos are removed on update. By default the limit is set
+   to 15 days.
+5. Bug report goes here:
    https://github.com/dxwc/youtube_subscriber.js/issues
 
 EXAMPLE:
