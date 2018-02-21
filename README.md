@@ -46,4 +46,6 @@ youtube/google account needed.
 + A bug fixed that was preventing saving of most video data
 + It's now faster (while still being "synchronous")
 + Fixed so it does not break on published videos made public later
-+ (new) Include subscription channel list on the bottom of the generated page
++ Include subscription channel list on the bottom of the generated page
++ (new) Another large speed increase by downloading and processing at most three
+  channels in "parallel"

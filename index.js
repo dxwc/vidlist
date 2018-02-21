@@ -438,15 +438,42 @@ function parse_and_save_data(page, ch_id_id)
     });
 }
 
+global.remaining = 0;
+
+function process_one(channel_id_id, channel_id)
+{
+    return Promise.resolve()
+    .then(() =>
+    {
+        if(global.prog)
+            process.stdout.write
+            (`: ${global.remaining} channel's download and processing remaining\r`);
+        return true;
+    })
+    .then(() =>
+    {
+        return download_page
+        (
+            `https://www.youtube.com/feeds/videos.xml?channel_id=${channel_id}`
+        );
+    })
+    .then((page) =>
+    {
+        return parse_and_save_data(page, channel_id_id);
+    })
+    .then(() =>
+    {
+        global.remaining -= 1;
+    });
+}
+
 function download_and_save_feed()
 {
     return new Promise((resolve, reject) =>
     {
         db.all
         (
-            `
-            SELECT channel_id_id, channel_id FROM subscriptions
-            `,
+            ` SELECT channel_id_id, channel_id FROM subscriptions`,
             (err, rows) =>
             {
                 if(err) reject(err);
@@ -457,34 +484,54 @@ function download_and_save_feed()
 
                     for(let i = 0; i < rows.length; ++i)
                     {
-                        all_downloads = all_downloads
-                        .then(() =>
+                        if(i + 2 < rows.length)
                         {
-                            if(global.prog)
-                                process.stdout.write
-(`: ${global.remaining} channel's download and processing remaining\r`);
-
-                            return download_page
-                            (
-                                `https://www.youtube.com/feeds/videos.xml?channel_id=`
-                                + rows[i].channel_id
-                            )
-                            .then((page) =>
-                            {
-                                return page;
-                            })
-                            .then((page) =>
-                            {
-                                return parse_and_save_data(
-                                    page, rows[i].channel_id_id);
-                            })
+                            let k = i;
+                            all_downloads = all_downloads
                             .then(() =>
                             {
-                                global.remaining -= 1;
+                                return Promise.all
+                                (
+                                    [
+                            process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
+                            process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
+                            process_one(rows[k].channel_id_id, rows[k].channel_id)
+                                    ]
+                                );
                             });
-                        });
+
+                            i += 2;
+                        }
+                        else if(i + 1 < rows.length)
+                        {
+                            // by the time i is used bellow, program moved past
+                            // this block to the i+=1, having a temp k seems to work
+                            // TODO: find out why exactly
+                            let k = i;
+                            all_downloads = all_downloads
+                            .then(() =>
+                            {
+                                return Promise.all
+                                (
+                                    [
+                            process_one(rows[k].channel_id_id, rows[k].channel_id),
+                            process_one(rows[k+1].channel_id_id, rows[k+1].channel_id)
+                                    ]
+                                );
+                            });
+
+                            i += 1;
+                        }
+                        else
+                        {
+                            all_downloads = all_downloads
+                            .then(() =>
+                            {
+                    return process_one(rows[i].channel_id_id, rows[i].channel_id);
+                            });
+                        }
                     }
-                    resolve(all_downloads);
+                    return resolve(all_downloads);
                 }
             }
         );
