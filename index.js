@@ -621,7 +621,7 @@ ${xss.inHTMLData(result[0][i].video_title)}</h2>
         full +=
 `
     <div class='channels'>
-        <h3>Channls</h3>
+        <h3>Channels</h3>
         <ul>`;
 
         result[1].forEach((elem) =>
