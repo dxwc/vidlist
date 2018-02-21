@@ -44,7 +44,6 @@ youtube/google account needed.
 
 + A bug fixed that was causing unpredictable speed issue during parsing and saving
 + A bug fixed that was preventing saving of most video data
-+ (new) It's now MUCH faster (while still being "synchronous")!
-    + Tested with 44 subscriptions for `time node index.js -upgo` :
-    + Old: 82.559 seconds
-    + New: 11.770 seconds
++ It's now faster (while still being "synchronous")
++ Fixed so it does not break on published videos made public later
++ (new) Include subscription channel list on the bottom of the generated page
