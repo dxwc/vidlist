@@ -313,15 +313,11 @@ function insert_entries(values)
     return new Promise((resolve, reject) =>
     {
         if(values.length === 0) return resolve();
-        // Will throw UNIQUE constraint error on each videos after
-        // the new entries with error 19, causing it to resolve()
-        // faster.
-        // To go through all, use INSERT OR IGNORE -- note: that will
-        // not produce any error
+
         db.run
         (
             `
-            INSERT INTO videos
+            INSERT OR REPLACE INTO videos
             (
                 channel_id_id,
                 video_id,
