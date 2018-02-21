@@ -7,6 +7,8 @@ const validator = require('validator');
 const Getopt    = require('node-getopt');
 const xss       = require('xss-filters');
 
+global.old_video_limit_sec = 15*24*60*60; // 15 days
+
 function download_page(link, method)
 {
     return new Promise((resolve, reject) =>
@@ -253,7 +255,6 @@ function subscribe(youtube_url)
 }
 
 function keep_db_shorter()
-// delete all video data that are 15 days or more older
 {
     return new Promise((resolve, reject) =>
     {
@@ -263,7 +264,8 @@ function keep_db_shorter()
             DELETE
                 FROM videos
             WHERE
-                video_published < ${(new Date().getTime()/1000) - 1296000}`,
+                video_published < ${
+                    (new Date().getTime()/1000) - global.old_video_limit_sec}`,
             (err) =>
             {
                 if(err) reject(err);
@@ -306,17 +308,16 @@ function list_subscriptions(names_only)
 
 }
 
-function insert_entry
-(
-    ch_id_id,
-    a_id,
-    a_title,
-    a_pubDate,
-    a_description
-)
+function insert_entries(values)
 {
     return new Promise((resolve, reject) =>
     {
+        if(values.length === 0) return resolve();
+        // Will throw UNIQUE constraint error on each videos after
+        // the new entries with error 19, causing it to resolve()
+        // faster.
+        // To go through all, use INSERT OR IGNORE -- note: that will
+        // not produce any error
         db.run
         (
             `
@@ -329,13 +330,7 @@ function insert_entry
                 video_description
             )
             VALUES
-            (
-                ${ch_id_id},
-                '${a_id}',
-                '${a_title}',
-                ${a_pubDate},
-                '${a_description}'
-            );
+            ${values}
             `,
             (result, err) =>
             {
@@ -372,7 +367,7 @@ function parse_and_save_data(page, ch_id_id)
     let a_pubDate;
     let a_description;
 
-    let promise_arr = [];
+    let values = '';
 
     return new Promise((resolve, reject) =>
     {
@@ -432,21 +427,18 @@ function parse_and_save_data(page, ch_id_id)
 
             page = page.substring(page.indexOf('</entry>'));
 
-            promise_arr.push
-            (
-                insert_entry
-                (
-                    ch_id_id,
-                    a_id,
-                    a_title,
-                    a_pubDate,
-                    a_description
-                )
-            );
+            if(a_pubDate >= (new Date().getTime()/1000) - global.old_video_limit_sec)
+            {
+                values += `${values.length ? ',' : ''}
+(${ch_id_id}, '${a_id}', '${a_title}', ${a_pubDate}, '${a_description}')`;
+            }
         }
 
-        Promise.all(promise_arr).then(() => { return resolve() });
-
+        return insert_entries(values)
+        .then(() =>
+        {
+            return resolve();
+        });
     });
 }
 
@@ -481,6 +473,10 @@ function download_and_save_feed()
                                 `https://www.youtube.com/feeds/videos.xml?channel_id=`
                                 + rows[i].channel_id
                             )
+                            .then((page) =>
+                            {
+                                return page;
+                            })
                             .then((page) =>
                             {
                                 return parse_and_save_data(
