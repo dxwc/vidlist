@@ -47,5 +47,6 @@ youtube/google account needed.
 + It's now faster (while still being "synchronous")
 + Fixed so it does not break on published videos made public later
 + Include subscription channel list on the bottom of the generated page
-+ (new) Another large speed increase by downloading and processing at most three
-  channels in "parallel"
++ (new) A LARGE speed increase by downloading and processing at most four channels in
+  "parallel"
+    + 45 subscription update takes about 5 seconds using ~320kb/s downloads

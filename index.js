@@ -479,12 +479,34 @@ function download_and_save_feed()
                 if(err) reject(err);
                 else
                 {
+                    if(global.prog)
+                        process.stdout.write('Initiating downloader and processor\r');
+
                     let all_downloads = Promise.resolve();
                     global.remaining = rows.length;
 
                     for(let i = 0; i < rows.length; ++i)
                     {
-                        if(i + 2 < rows.length)
+                        if(i + 3 < rows.length)
+                        {
+                            let k = i;
+                            all_downloads = all_downloads
+                            .then(() =>
+                            {
+                                return Promise.all
+                                (
+                                    [
+                            process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
+                            process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
+                            process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
+                            process_one(rows[k].channel_id_id, rows[k].channel_id)
+                                    ]
+                                );
+                            });
+
+                            i += 3;
+                        }
+                        else if(i + 2 < rows.length)
                         {
                             let k = i;
                             all_downloads = all_downloads
