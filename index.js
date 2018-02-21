@@ -1,4 +1,7 @@
+#! /usr/bin/env node
+
 const fs        = require('fs');
+const path      = require('path');
 const https     = require('https');
 
 const opn       = require('opn');
@@ -8,6 +11,45 @@ const Getopt    = require('node-getopt');
 const xss       = require('xss-filters');
 
 global.old_video_limit_sec = 15*24*60*60; // 15 days
+
+global.dot = path.join(require('os').homedir(), '.subscribe');
+global.html = path.join(require('os').tmpdir() , 'yt_view_subscriptions.html');
+
+try
+{
+    if(!fs.statSync(global.dot).isDirectory())
+    {
+        let err = {};
+        err.errno = -9001;
+        throw err;
+    }
+}
+catch(err)
+{
+    if(err.errno && err.errno === -2)
+    {
+        try
+        {
+            fs.mkdirSync(global.dot);
+        }
+        catch(err)
+        {
+            console.error(`=> Error creating directory ${global.dot}`);
+            throw err;
+        }
+    }
+    else if(err.errno && err.errno === -9001)
+    {
+        console.error(`=> Error:\nCan not create a directory as there is an \
+existing file with the same name ( ${global.dot} ). \
+Remove/rename the file and then re-run to continue`);
+        process.exit(1);
+    }
+    else
+    {
+        throw err;
+    }
+}
 
 function download_page(link, method)
 {
@@ -139,70 +181,72 @@ function open_db_global()
 {
     return new Promise((resolve, reject) =>
     {
-        global.db = new sqlite3.Database('youtube_subscription.data', (err) =>
-        {
-            if(err) reject(err);
-            sql_promise
-            (
-                `
-                CREATE TABLE IF NOT EXISTS subscriptions
-                (
-                    channel_id_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    channel_id    TEXT UNIQUE NOT NULL,
-                    channel_name  TEXT
-                );
-                `
-            )
-            .then(() =>
+        global.db = new sqlite3.Database
+        (
+            path.join(global.dot, 'youtube_subscription.data'),
+            (err) =>
             {
-                return sql_promise
+                if(err) reject(err);
+                sql_promise
                 (
                     `
-                    CREATE TABLE IF NOT EXISTS videos
+                    CREATE TABLE IF NOT EXISTS subscriptions
                     (
-                        channel_id_id     INTEGER REFERENCES
-                                          subscriptions(channel_id_id),
-                        video_id          TEXT PRIMARY KEY,
-                        video_title       TEXT,
-                        video_published   INTEGER,
-                        video_description TEXT
+                        channel_id_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        channel_id    TEXT UNIQUE NOT NULL,
+                        channel_name  TEXT
                     );
                     `
-                );
-            })
-            .then(() =>
-            {
-                return sql_promise
-                (
-                    `
-                    CREATE INDEX IF NOT EXISTS video_published_i
-                    ON videos(video_published DESC);
-                    `
-                );
-            })
-            .then(() =>
-            {
-                return sql_promise
-                (
-                    `
-                    CREATE UNIQUE INDEX IF NOT EXISTS channel_id_i
-                    ON subscriptions(channel_id);
-                    `
-                );
-            })
-            .then(() =>
-            {
-                resolve();
-            })
-            .catch((err) =>
-            {
-                reject(err);
-            })
-        });
+                )
+                .then(() =>
+                {
+                    return sql_promise
+                    (
+                        `
+                        CREATE TABLE IF NOT EXISTS videos
+                        (
+                            channel_id_id     INTEGER REFERENCES
+                                              subscriptions(channel_id_id),
+                            video_id          TEXT PRIMARY KEY,
+                            video_title       TEXT,
+                            video_published   INTEGER,
+                            video_description TEXT
+                        );
+                        `
+                    );
+                })
+                .then(() =>
+                {
+                    return sql_promise
+                    (
+                        `
+                        CREATE INDEX IF NOT EXISTS video_published_i
+                        ON videos(video_published DESC);
+                        `
+                    );
+                })
+                .then(() =>
+                {
+                    return sql_promise
+                    (
+                        `
+                        CREATE UNIQUE INDEX IF NOT EXISTS channel_id_i
+                        ON subscriptions(channel_id);
+                        `
+                    );
+                })
+                .then(() =>
+                {
+                    resolve();
+                })
+                .catch((err) =>
+                {
+                    reject(err);
+                })
+            }
+        );
     })
 }
-
-// let db = new sqlite3.Database('youtube_subscription.data'); // delete me
 
 function subscribe(youtube_url)
 {
@@ -710,7 +754,7 @@ ${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
 </body>
 </html>
 `;
-    fs.writeFileSync('yt_view_subscriptions.html', full);
+    fs.writeFileSync(global.html, full);
     return true;
 
     });
@@ -814,14 +858,15 @@ NOTE:
    but only effective with update
 2. Options to update, generate and open can be combined.For all
    other options combining will produce unexpeted results.
-3. Program is currently running from this directory:
-   ${__dirname}
-4. Variable 'global.old_video_limit_sec' near the top of
+3. Program file is in directory: ${__dirname}
+4. Database file will be kept in directory: ${global.dot}
+5. Generated HTML file will be in directory: ${global.html}
+6. Variable 'global.old_video_limit_sec' near the top of
    'index.js' file determines the maximum age of a video
    (since published) to keep in database for use, any older
    videos are removed on update. By default the limit is set
    to 15 days.
-5. Bug report goes here:
+7. Bug report goes here:
    https://github.com/dxwc/youtube_subscriber.js/issues
 
 EXAMPLE:
@@ -903,7 +948,7 @@ open_db_global()
     if(opt.options.open)
     {
         console.info('--Opening HTML with your default web browser');
-        opn('yt_view_subscriptions.html')
+        opn(global.html)
         .catch((err) =>
         {
                 console.error('=>Error opening HTML:\n', err);
