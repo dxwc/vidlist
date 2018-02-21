@@ -491,7 +491,7 @@ function download_and_save_feed()
     });
 }
 
-function generate_html()
+function get_video_data()
 {
     return new Promise((resolve, reject) =>
     {
@@ -513,10 +513,43 @@ function generate_html()
             `,
             (err, rows) =>
             {
-                if(err) reject(err);
-                else
-                {
-                    let full =
+                if(err) return reject(err);
+                return resolve(rows);
+            }
+        );
+    });
+}
+
+function get_channel_data()
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.all
+        (
+            `
+            SELECT
+                channel_id,
+                channel_name
+            FROM
+                subscriptions
+            `,
+            (err, rows) =>
+            {
+                if(err) return reject(err);
+                return resolve(rows);
+            }
+        );
+    });
+}
+
+
+function generate_html()
+{
+    Promise.all([get_video_data(), get_channel_data()])
+    .then((result) =>
+    {
+
+        let full =
 `<!DOCTYPE html>
 <html>
 <head>
@@ -545,37 +578,72 @@ function generate_html()
             height: 298px;
             overflow: auto;
         }
+        .channels
+        {
+            float: left;
+            width: 96%;
+            padding: 2%;
+            padding-top: 1%;
+        }
+        ul
+        {
+            -moz-column-count: 4;
+            -moz-column-gap: 1%;
+            -webkit-column-count: 4;
+            -webkit-column-gap: 1%;
+            column-count: 4;
+            column-gap: 1%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
 `
-                    for(let i = 0; i < rows.length; ++i)
-                    {
-                        full +=
+        for(let i = 0; i < result[0].length; ++i)
+        {
+            full +=
 `
-    <div class='container' title='${xss.inHTMLData(rows[i].channel_name)}'>
+    <div class='container' title='${xss.inHTMLData(result[0][i].channel_name)}'>
         <a href='https://www.youtube-nocookie.com/embed/\
-${xss.inHTMLData(rows[i].video_id)}?rel=0'>
+${xss.inHTMLData(result[0][i].video_id)}?rel=0'>
             <img src='https://img.youtube.com/vi/\
-${xss.inHTMLData(rows[i].video_id)}/mqdefault.jpg'>
+${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
         </a>
         <a href='https://www.youtube.com/watch?v=\
-${xss.inHTMLData(rows[i].video_id)}'>
-            <h2 title='${xss.inHTMLData(rows[i].video_description)}'>\
-${xss.inHTMLData(rows[i].video_title)}</h2>
+${xss.inHTMLData(result[0][i].video_id)}'>
+            <h2 title='${xss.inHTMLData(result[0][i].video_description)}'>\
+${xss.inHTMLData(result[0][i].video_title)}</h2>
         </a>
     </div>`
-                    }
-                    full +=
+        }
+
+        full +=
 `
+    <div class='channels'>
+        <h3>Channls</h3>
+        <ul>`;
+
+        result[1].forEach((elem) =>
+        {
+            full +=
+`
+           <li><a href='https://www.youtube.com/channel/\
+${xss.inHTMLData(elem.channel_id)}'>\
+${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
+        });
+
+        full +=
+`
+        </ul>
+    </div>
+
 </body>
 </html>
 `;
-                    fs.writeFileSync('yt_view_subscriptions.html', full);
-                    resolve();
-                }
-            }
-        );
+    fs.writeFileSync('yt_view_subscriptions.html', full);
+    return true;
+
     });
 }
 

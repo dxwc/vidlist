@@ -45,5 +45,5 @@ youtube/google account needed.
 + A bug fixed that was causing unpredictable speed issue during parsing and saving
 + A bug fixed that was preventing saving of most video data
 + It's now faster (while still being "synchronous")
-+ (new) Allows inclusion of videos that may have been published before but made
-  available later [Note: before this commit, all new videos were being ignored if an old video has been made publicly available later after other videos]
++ Fixed so it does not break on published videos made public later
++ (new) Include subscription channel list on the bottom of the generated page
