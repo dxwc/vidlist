@@ -44,7 +44,7 @@ youtube/google account needed.
 
 + A bug fixed that was causing unpredictable speed issue during parsing and saving
 + A bug fixed that was preventing saving of most video data
-+ (new) It's now MUCH faster (while stil being "synchronous")!
++ (new) It's now MUCH faster (while still being "synchronous")!
     + Tested with 44 subscriptions for `time node index.js -upgo` :
     + Old: 82.559 seconds
     + New: 11.770 seconds

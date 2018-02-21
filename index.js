@@ -367,7 +367,6 @@ function parse_and_save_data(page, ch_id_id)
     let a_pubDate;
     let a_description;
 
-    let promise_arr = [];
     let values = '';
 
     return new Promise((resolve, reject) =>
@@ -431,13 +430,7 @@ function parse_and_save_data(page, ch_id_id)
             if(a_pubDate >= (new Date().getTime()/1000) - global.old_video_limit_sec)
             {
                 values += `${values.length ? ',' : ''}
-                    (
-                        ${ch_id_id},
-                        '${a_id}',
-                        '${a_title}',
-                        ${a_pubDate},
-                        '${a_description}'
-                    )`;
+(${ch_id_id}, '${a_id}', '${a_title}', ${a_pubDate}, '${a_description}')`;
             }
         }
 
