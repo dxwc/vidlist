@@ -856,7 +856,7 @@ function export_subscription_list()
                 {
                     subs.push
                     (
-                        [ rows[i].channel_id, rows[i].channel_name ]
+                        [rows[i].channel_id, validator.unescape(rows[i].channel_name)]
                     );
                 }
 
@@ -875,6 +875,93 @@ function export_subscription_list()
     });
 }
 
+function insert_a_subscription(ch_id, ch_name)
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.run
+        (
+            `
+            INSERT INTO subscriptions
+                (channel_id, channel_name)
+            VALUES
+                ('${ch_id}', '${ch_name}');
+            `,
+            (result) =>
+            {
+                if(result && result.errno)
+                {
+                    if(result.errno == 19)
+    console.info(`Already subscribed. Skipping: '${ch_name}' (${ch_id})`);
+                    else
+    console.info(result);
+                }
+                else if(result === null)
+    console.info(`You are now subscribed to '${ch_name}' (${ch_id})`);
+                else
+    console.error('=> Error', result);
+                resolve();
+            }
+        );
+    });
+}
+
+function import_subscription_list(json_file)
+{
+    try
+    {
+        let imported = fs.readFileSync(json_file);
+        let arr;
+        try
+        {
+            arr = JSON.parse(imported);
+        }
+        catch(err)
+        {
+            console.error(`=>Error: File doesn't contain valid JSON`);
+            throw err;
+        }
+
+        let promises = [];
+        for(let i = 0; i < arr.length; ++i)
+        {
+            if(
+                !validator.isWhitelisted
+                (
+                    arr[i][0].toLowerCase(),
+                    'abcdefghijklmnopqrstuvwxyz0123456789-_'
+                )
+            )
+            {
+                console.error('SKIPPING CORRUPTED DATA:', arr[i]);
+                continue;
+            }
+            promises.push
+            (
+                insert_a_subscription
+                (
+                    arr[i][0],
+                    validator.escape(arr[i][1])
+                )
+            );
+        }
+
+        return Promise.all(promises);
+    }
+    catch(err)
+    {
+        if(err.errno === -2 && err.code === 'ENOENT')
+        {
+            console.error(`=>Error: File not found`);
+            process.exit(0);
+        }
+        else
+        {
+            throw err;
+        }
+    }
+}
+
 /// ----------------------------------
 
 
@@ -889,6 +976,7 @@ let getopt = new Getopt
   ['p', 'progress', 'Prints progress information for update'],
   ['r', 'remove', 'Prompts to remove a subscription'],
   ['e', 'export', 'Exports subscription list in a JSON file'],
+  ['i', 'import=ARG', 'Imports subscriptions given JSON file'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
@@ -956,6 +1044,8 @@ open_db_global()
         return list_subscriptions();
     else if(opt.options.export)
         return export_subscription_list();
+    else if(opt.options.import)
+        return import_subscription_list(opt.options.import);
     else if(opt.options.remove)
         return remove_subscription();
     else if(opt.options.subscribe)
@@ -975,7 +1065,8 @@ open_db_global()
         opt.options.list ||
         opt.options.subscribe ||
         opt.options.remove ||
-        opt.options.export
+        opt.options.export ||
+        opt.options.import
     )
     {
         return close_everything(0);
