@@ -1,0 +1,31 @@
+{
+  "name": "subscribe",
+  "version": "0.0.1",
+  "description": "A command line tool to subscribe to youtube channels and view updates in a locally generated html file",
+  "main": "index.js",
+  "bin": {
+    "subscribe": "index.js",
+    "sub": "index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dxwc/youtube_subscriber.js.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/dxwc/youtube_subscriber.js/issues"
+  },
+  "homepage": "https://github.com/dxwc/youtube_subscriber.js#readme",
+  "dependencies": {
+    "node-getopt": "^0.2.3",
+    "opn": "^5.1.0",
+    "sqlite3": "^3.1.13",
+    "validator": "^9.1.1",
+    "xss-filters": "^1.2.7"
+  }
+}
