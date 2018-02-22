@@ -5,8 +5,30 @@ youtube/google account needed.
 # Setup
 
 1. Have [Node.js](https://nodejs.org/en/) installed (any version
-  higher than 6 should be fine)
-2. Run `npm install -g subscribe` or `sudo npm install -g subscribe`
+   higher than 6 should be fine)
+2. Clone or Download(and extract) this repository
+
++ **Instruction for linux/unix:**
+    + Install:
+        + Open terminal
+        + `cd` into the cloned/downloaded directory
+        + Run `npm install`
+        + Run `sudo npm link`
+    + To uninstall:
+        + Open terminal and run `sudo npm rm --global subscribe`
++ **Instruction for windows**
+    + Install:
+        + Open command prompt in administrator mode
+        + `cd` into the cloned/downloaded directory
+        + Run `npm install`
+        + Run `npm link`
+    + To uninstall:
+        + Open command prompt in administrator mode and run `npm rm --global subscribe`
+
++ **NOTE**: Do not remove/rename/move the original directories after installation
++ **NOTE**: After installation, the application will be available for use from
+  anywhere by opening command prompt/terminal and running either
+  `subscribe` or `sub` command
 
 # Use
 
@@ -14,15 +36,15 @@ youtube/google account needed.
 
 # Common Usages Example
 
-### Subscribe to a youtube channel:
+**Subscribe to a youtube channel:**
 
 `sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
-### Pull update from channel feed, show update progress, generate HTML and then open the HTML with your default browser:
+**Pull update from channel feed, show update progress, generate HTML and then open the HTML with your default browser:**
 
 `sub -upgo`
 
-# Want to start with my recommended list of channels ?
+**Want to start with my recommended list of channels ?**
 
 1. Save [this file](https://raw.githubusercontent.com/dxwc/subscribe/files/subscriptions.json) somewhere on your computer.
 2. Run `sub --import /location/to/subscriptions.json`
