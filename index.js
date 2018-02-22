@@ -1009,7 +1009,7 @@ NOTE:
 7. Bug report goes here:
    https://github.com/dxwc/subscribe/issues
 
-This software was not produced by or for YouTube, LLC and has no direct
+This software was not produced by or directly for YouTube, LLC and has no
 affiliation with the LLC. Use this software only at your own volition.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
