@@ -14,11 +14,11 @@ youtube/google account needed.
 
 # Common Usages Example
 
-### Subscribe to a youtube channel
+### Subscribe to a youtube channel:
 
 `sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
-### Pull update from channel feed, show update progress, generate HTML and then open the HTML with your default browser
+### Pull update from channel feed, show update progress, generate HTML and then open the HTML with your default browser:
 
 `sub -upgo`
 
