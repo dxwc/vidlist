@@ -13,7 +13,7 @@ const xss       = require('xss-filters');
 global.old_video_limit_sec = 15*24*60*60; // 15 days
 
 global.dot = path.join(require('os').homedir(), '.subscribe');
-global.html = path.join(require('os').tmpdir() , 'yt_view_subscriptions.html');
+global.html = path.join(require('os').tmpdir() , 'view_subscriptions.html');
 
 try
 {
@@ -183,7 +183,7 @@ function open_db_global()
     {
         global.db = new sqlite3.Database
         (
-            path.join(global.dot, 'youtube_subscription.data'),
+            path.join(global.dot, 'subscription_data.db'),
             (err) =>
             {
                 if(err) reject(err);
@@ -548,10 +548,10 @@ function download_and_save_feed()
                                 return Promise.all
                                 (
                                     [
-                            process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
-                            process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
-                            process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
-                            process_one(rows[k].channel_id_id, rows[k].channel_id)
+                        process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
+                        process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
+                        process_one(rows[k].channel_id_id, rows[k].channel_id)
                                     ]
                                 );
                             });
@@ -567,9 +567,9 @@ function download_and_save_feed()
                                 return Promise.all
                                 (
                                     [
-                            process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
-                            process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
-                            process_one(rows[k].channel_id_id, rows[k].channel_id)
+                        process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
+                        process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
+                        process_one(rows[k].channel_id_id, rows[k].channel_id)
                                     ]
                                 );
                             });
@@ -977,49 +977,67 @@ let getopt = new Getopt
   ['r', 'remove', 'Prompts to remove a subscription'],
   ['e', 'export', 'Exports subscription list in a JSON file'],
   ['i', 'import=ARG', 'Imports subscriptions given JSON file'],
+  ['v', 'version', 'Prints version'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
 (
-`Usages Youtube Subscriber (js)
+`
+Usages:
+
+  subscribe [options] [arguments]
+  sub [options] [arguments]
 
 [[OPTIONS]]
 
 NOTE:
 
-1. Option to show progress can be added with any other commands
-   but only effective with update
-2. Options to update, generate and open can be combined.For all
-   other options combining will produce unexpeted results.
-3. Program file is in directory: ${__dirname}
-4. Database file will be kept in directory: ${global.dot}
-5. Generated HTML file will be in directory: ${global.html}
+1. Progress option works with update only
+2. Options to update, generate and open can be combined. For
+   all other options combining will produce unexpeted results.
+3. Program file is in directory:
+   ${__dirname}
+4. Database and exported JSON files will be kept in directory:
+   ${global.dot}
+5. Generated HTML file location will be:
+   ${global.html}
 6. Variable 'global.old_video_limit_sec' near the top of
    'index.js' file determines the maximum age of a video
    (since published) to keep in database for use, any older
-   videos are removed on update. By default the limit is set
-   to 15 days.
+   videos are removed on update. Default limit is set to 15
+   days.
 7. Bug report goes here:
-   https://github.com/dxwc/youtube_subscriber.js/issues
+   https://github.com/dxwc/subscribe/issues
 
-EXAMPLE:
+This software was not produced by or for YouTube, LLC and has no direct
+affiliation with the LLC. Use this software only at your own volition.
 
-Subscribe to a youtube channel:
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-node index.js --subscribe https://www.youtube.com/watch?v=EeNiqKNtpAA
+EXAMPLE Usages:
 
-Remove a subscription:
+> Subscribe to a youtube channel:
 
-node index.js --remove
+sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA
 
-List your subscriptions:
+> Remove a subscription:
 
-node index.js --list
+sub --remove
 
-Pull update from channel feed, show update progress, generate HTML
+> List your subscriptions:
+
+sub --list
+
+> Pull update from channel feed, show update progress, generate HTML
 and open the HTML with your default browser:
 
-node index.js -upgo
+sub -upgo
 `
 )
 .error(() =>
@@ -1032,6 +1050,12 @@ let opt = getopt.parse(process.argv.slice(2));
 if(process.argv.length <= 2 || opt.options.help)
 {
     console.info(getopt.getHelp());
+    process.exit(0);
+}
+
+if(opt.options.version)
+{
+    console.info('0.0.1');
     process.exit(0);
 }
 
@@ -1093,8 +1117,12 @@ open_db_global()
                 console.error('=>Error opening HTML:\n', err);
                 return close_everything(1);
         });
+        setTimeout(() => { return close_everything(0)}, 600);
     }
-    setTimeout(() => { return close_everything(0)}, 600);
+    else
+    {
+        return close_everything(0);
+    }
 })
 .catch((err) =>
 {
