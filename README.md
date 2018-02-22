@@ -38,6 +38,10 @@ youtube/google account needed.
 
 **Subscribe to a youtube channel:**
 
+`sub https://www.youtube.com/watch?v=EeNiqKNtpAA`
+
+OR
+
 `sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
 **Pull update from channel feed, show update progress, generate HTML and then open the HTML with your default browser:**

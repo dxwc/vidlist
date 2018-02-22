@@ -1024,6 +1024,10 @@ EXAMPLE Usages:
 
 > Subscribe to a youtube channel:
 
+sub https://www.youtube.com/watch?v=EeNiqKNtpAA
+
+    or
+
 sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA
 
 > Remove a subscription:
@@ -1047,6 +1051,7 @@ sub -upgo
 });
 
 let opt = getopt.parse(process.argv.slice(2));
+
 if(process.argv.length <= 2 || opt.options.help)
 {
     console.info(getopt.getHelp());
@@ -1080,7 +1085,16 @@ open_db_global()
                 return download_and_save_feed()
                 .then(() => keep_db_shorter());
     }
-    else return true;
+    else if(validator.isURL(process.argv[2]))
+    {
+        opt.options.subscribe = true;
+        return subscribe(process.argv[2]);
+    }
+    else
+    {
+        console.info(getopt.getHelp());
+        return close_everything(1);
+    }
 })
 .then(() =>
 {
