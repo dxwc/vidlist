@@ -1060,7 +1060,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.2');
+    console.info('vidlist 0.0.3');
     process.exit(0);
 }
 
