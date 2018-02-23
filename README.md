@@ -6,33 +6,14 @@ youtube/google account needed.
 
 1. Have [Node.js](https://nodejs.org/en/) installed (any version
    higher than 6 should be fine)
-2. Clone or Download(and extract) this repository
-
-+ **Instruction for linux/unix:**
-    + Install:
-        + Open terminal
-        + `cd` into the cloned/downloaded directory
-        + Run `npm install`
-        + Run `sudo npm link`
-    + To uninstall:
-        + Open terminal and run `sudo npm rm --global subscribe`
-+ **Instruction for windows**
-    + Install:
-        + Open command prompt in administrator mode
-        + `cd` into the cloned/downloaded directory
-        + Run `npm install`
-        + Run `npm link`
-    + To uninstall:
-        + Open command prompt in administrator mode and run `npm rm --global subscribe`
-
-+ **NOTE**: Do not remove/rename/move the original directories after installation
-+ **NOTE**: After installation, the application will be available for use from
-  anywhere by opening command prompt/terminal and running either
-  `subscribe` or `sub` command
+2. To install, run `npm install -g vidlist`
+    + Linux may need `sudo`
+    + Winodws may need running cmd as admistrator
 
 # Use
 
 + Run and see `sub --help`
++ **Note**: The program will run the same with the names: `vidlist`, `vid` or `sub`
 
 # Common Usages Example
 
@@ -51,7 +32,7 @@ OR
 **Want to start with my recommended list of channels ?**
 
 1. Save [this file](https://raw.githubusercontent.com/dxwc/subscribe/files/subscriptions.json) somewhere on your computer.
-2. Run `sub --import /location/to/subscriptions.json`
+2. Run: `sub --import /location/to/subscriptions.json`
 
 # Features
 
@@ -64,7 +45,7 @@ OR
 + It is easy to see where in the `index.js` to edit to change CSS to one's liking
 + Tile hover shows channel name, title hover shows video description
 + Can easily export and import subscription as text (JSON) file
-+ Can easily remove particular subscriptions
++ Can easily add and remove channels from subscriptions
 
 ----
 

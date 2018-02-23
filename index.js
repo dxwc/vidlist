@@ -12,7 +12,7 @@ const xss       = require('xss-filters');
 
 global.old_video_limit_sec = 15*24*60*60; // 15 days
 
-global.dot = path.join(require('os').homedir(), '.subscribe');
+global.dot = path.join(require('os').homedir(), '.vidlist');
 global.html = path.join(require('os').tmpdir() , 'view_subscriptions.html');
 
 try
@@ -985,7 +985,8 @@ let getopt = new Getopt
 `
 Usages:
 
-  subscribe [options] [arguments]
+  vidlist [options] [arguments]
+  vid [options] [arguments]
   sub [options] [arguments]
 
 [[OPTIONS]]
@@ -994,7 +995,7 @@ NOTE:
 
 1. Progress option works with update only
 2. Options to update, generate and open can be combined. For
-   all other options combining will produce unexpeted results.
+   all other options, combining will produce unexpeted results.
 3. Program file is in directory:
    ${__dirname}
 4. Database and exported JSON files will be kept in directory:
@@ -1007,7 +1008,7 @@ NOTE:
    videos are removed on update. Default limit is set to 15
    days.
 7. Bug report goes here:
-   https://github.com/dxwc/subscribe/issues
+   https://github.com/dxwc/vidlist/issues
 
 This software was not produced by or directly for YouTube, LLC and has no
 affiliation with the LLC. Use this software only at your own volition.
@@ -1060,7 +1061,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('0.0.1');
+    console.info('vidlist 0.0.2');
     process.exit(0);
 }
 
