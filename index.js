@@ -26,7 +26,7 @@ try
 }
 catch(err)
 {
-    if(err.errno && err.errno === -2)
+    if(err.errno && (err.errno === -2 || err.errno === -4058))
     {
         try
         {
@@ -666,7 +666,7 @@ function get_channel_data()
 
 function generate_html()
 {
-    Promise.all([get_video_data(), get_channel_data()])
+    return Promise.all([get_video_data(), get_channel_data()])
     .then((result) =>
     {
 
@@ -762,9 +762,8 @@ ${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
 </body>
 </html>
 `;
-    fs.writeFileSync(global.html, full);
-    return true;
-
+        fs.writeFileSync(global.html, full);
+        return true;
     });
 }
 
@@ -1126,13 +1125,7 @@ open_db_global()
     if(opt.options.open)
     {
         console.info('--Opening HTML with your default web browser');
-        opn(global.html)
-        .catch((err) =>
-        {
-                console.error('=>Error opening HTML:\n', err);
-                return close_everything(1);
-        });
-        setTimeout(() => { return close_everything(0)}, 600);
+        return opn(global.html);
     }
     else
     {
