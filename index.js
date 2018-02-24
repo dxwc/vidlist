@@ -981,8 +981,8 @@ let getopt = new Getopt
 Usages:
 
   vidlist [options] [arguments]
-  vid [options] [arguments]
   sub [options] [arguments]
+  vl [options] [arguments]
 
 [[OPTIONS]]
 
@@ -1020,24 +1020,24 @@ EXAMPLE Usages:
 
 > Subscribe to a youtube channel:
 
-sub https://www.youtube.com/watch?v=EeNiqKNtpAA
+vl https://www.youtube.com/watch?v=EeNiqKNtpAA
 
     or
 
-sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA
+vl -s https://www.youtube.com/watch?v=EeNiqKNtpAA
 
 > Remove a subscription:
 
-sub --remove
+vl --remove
 
 > List your subscriptions:
 
-sub --list
+vl --list
 
 > Pull update from channel feed, show update progress, generate HTML
 and open the HTML with your default browser:
 
-sub -upgo
+vl -upgo
 `
 )
 .error(() =>

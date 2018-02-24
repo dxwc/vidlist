@@ -13,26 +13,26 @@ youtube/google account needed.
 # Use
 
 + Run and see `sub --help`
-+ **Note**: The program will run the same with the names: `vidlist`, `vid` or `sub`
++ **Note**: The program will run the same with the names: `vidlist`, `vl` or `sub`
 
 # Common Usages Example
 
 **Subscribe to a youtube channel:**
 
-`sub https://www.youtube.com/watch?v=EeNiqKNtpAA`
+`vl https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
 OR
 
-`sub -s https://www.youtube.com/watch?v=EeNiqKNtpAA`
+`vl -s https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
 **Pull update from channel feed, show update progress, generate HTML and then open the HTML with your default browser:**
 
-`sub -upgo`
+`vl -upgo`
 
 **Want to start with my recommended list of channels ?**
 
 1. Save [this file](https://raw.githubusercontent.com/dxwc/subscribe/files/subscriptions.json) somewhere on your computer.
-2. Run: `sub --import /location/to/subscriptions.json`
+2. Run: `vl --import /location/to/subscriptions.json`
 
 # Features
 

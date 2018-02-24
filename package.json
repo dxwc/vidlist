@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": {
     "vidlist": "index.js",
-    "vid" : "index.js",
+    "vl": "index.js",
     "sub": "index.js"
   },
   "scripts": {
