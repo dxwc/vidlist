@@ -721,7 +721,8 @@ function generate_html()
         {
             full +=
 `
-    <div class='container' title='${xss.inHTMLData(result[0][i].channel_name)}'>
+    <div class='container' title='${
+        xss.inHTMLData(validator.unescape(result[0][i].channel_name))}'>
         <a href='https://www.youtube-nocookie.com/embed/\
 ${xss.inHTMLData(result[0][i].video_id)}?rel=0'>
             <img src='https://img.youtube.com/vi/\
@@ -730,7 +731,7 @@ ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
         <a href='https://www.youtube.com/watch?v=\
 ${xss.inHTMLData(result[0][i].video_id)}'>
             <h2 title='${xss.inHTMLData(result[0][i].video_description)}'>\
-${xss.inHTMLData(result[0][i].video_title)}</h2>
+${xss.inHTMLData(validator.unescape(result[0][i].video_title))}</h2>
         </a>
     </div>`
         }
@@ -1058,7 +1059,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.4');
+    console.info('vidlist 0.0.5');
     process.exit(0);
 }
 
