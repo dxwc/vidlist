@@ -6,13 +6,17 @@ youtube/google account needed.
 
 1. Have [Node.js](https://nodejs.org/en/) installed (any version
    higher than 6 should be fine)
-2. To install, run `npm install -g vidlist`
-    + Linux may need `sudo`
+2. Run command: `npm install -g vidlist`
+    + Unix may need `sudo`
+    + Winodws may need running cmd as admistrator
+
++ To update to latest version anytime after above installation, run `npm update -g vidlist`
+    + Unix may need `sudo`
     + Winodws may need running cmd as admistrator
 
 # Use
 
-+ Run and see `sub --help`
++ Run and see `vl --help`
 + **Note**: The program will run the same with the names: `vidlist`, `vl` or `sub`
 
 # Common Usages Example
@@ -21,7 +25,7 @@ youtube/google account needed.
 
 `vl https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
-OR
+or
 
 `vl -s https://www.youtube.com/watch?v=EeNiqKNtpAA`
 
@@ -32,15 +36,15 @@ OR
 **Want to start with my recommended list of channels ?**
 
 1. Save [this file](https://raw.githubusercontent.com/dxwc/subscribe/files/subscriptions.json) somewhere on your computer.
-2. Run: `vl --import /location/to/subscriptions.json`
+2. Run: `vl --import <location name of the downloaded file>`
 
 # Features
 
 + Fast
 + Doesn't need any google account/API key
 + Latest videos are always on top
-+ Everything kept locally and nothing runs in the background
-+ Generated HTML file contains no Javascript
++ Processing and data are kept locally and nothing runs in the background
++ Generated HTML file contains no javascript or fancy css
 + Basic validation and XSS protection are in place
 + It is easy to see where in the `index.js` to edit to change CSS to one's liking
 + Tile hover shows channel name, title hover shows video description

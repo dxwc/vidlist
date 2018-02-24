@@ -972,7 +972,7 @@ let getopt = new Getopt
   ['r', 'remove', 'Prompts to remove a subscription'],
   ['e', 'export', 'Exports subscription list in a JSON file'],
   ['i', 'import=ARG', 'Imports subscriptions given JSON file'],
-  ['v', 'version', 'Prints version'],
+  ['v', 'version', 'Prints running version'],
   ['h', 'help', 'Display this help']
 ])
 .setHelp
@@ -981,8 +981,8 @@ let getopt = new Getopt
 Usages:
 
   vidlist [options] [arguments]
-  sub [options] [arguments]
-  vl [options] [arguments]
+  sub     [options] [arguments]
+  vl      [options] [arguments]
 
 [[OPTIONS]]
 
@@ -990,7 +990,7 @@ NOTE:
 
 1. Progress option works with update only
 2. Options to update, generate and open can be combined. For
-   all other options, combining will produce unexpeted results.
+   all other options, combining will produce unexpeted results
 3. Program file is in directory:
    ${__dirname}
 4. Database and exported JSON files will be kept in directory:
@@ -1001,9 +1001,11 @@ NOTE:
    'index.js' file determines the maximum age of a video
    (since published) to keep in database for use, any older
    videos are removed on update. Default limit is set to 15
-   days.
+   days
 7. Bug report goes here:
    https://github.com/dxwc/vidlist/issues
+8. This software and latest update information are stored here:
+   https://www.npmjs.com/package/vidlist
 
 This software was not produced by or directly for YouTube, LLC and has no
 affiliation with the LLC. Use this software only at your own volition.
@@ -1056,7 +1058,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.3');
+    console.info('vidlist 0.0.4');
     process.exit(0);
 }
 
