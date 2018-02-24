@@ -19,14 +19,15 @@ try
 {
     if(!fs.statSync(global.dot).isDirectory())
     {
-        let err = {};
-        err.errno = -9001;
-        throw err;
+        console.error(`=> Error:\nCan not create a directory as there is an \
+existing file with the same name ( ${global.dot} ). \
+Remove/rename the file and then re-run to continue`);
+        process.exit(1);
     }
 }
 catch(err)
 {
-    if(err.errno && (err.errno === -2 || err.errno === -4058))
+    if(err.code === 'ENOENT')
     {
         try
         {
@@ -35,18 +36,13 @@ catch(err)
         catch(err)
         {
             console.error(`=> Error creating directory ${global.dot}`);
+            console.error(err);
             throw err;
         }
     }
-    else if(err.errno && err.errno === -9001)
-    {
-        console.error(`=> Error:\nCan not create a directory as there is an \
-existing file with the same name ( ${global.dot} ). \
-Remove/rename the file and then re-run to continue`);
-        process.exit(1);
-    }
     else
     {
+        console.error('=> Unhandled Error\n', err);
         throw err;
     }
 }
@@ -949,7 +945,7 @@ function import_subscription_list(json_file)
     }
     catch(err)
     {
-        if(err.errno === -2 && err.code === 'ENOENT')
+        if(err.code === 'ENOENT')
         {
             console.error(`=>Error: File not found`);
             process.exit(0);
