@@ -825,7 +825,7 @@ function close_everything(code)
     {
         db.close((err) =>
         {
-            if(err) { console.error('=>Error:\n', err); process.exit(1) }
+            if(err) { console.error('=> Error:\n', err); process.exit(1) }
             else resolve();
         });
     })
@@ -914,7 +914,7 @@ function import_subscription_list(json_file)
         }
         catch(err)
         {
-            console.error(`=>Error: File doesn't contain valid JSON`);
+            console.error(`=> Error: File doesn't contain valid JSON`);
             throw err;
         }
 
@@ -929,7 +929,7 @@ function import_subscription_list(json_file)
                 )
             )
             {
-                console.error('SKIPPING CORRUPTED DATA:', arr[i]);
+                console.error('=> SKIPPING CORRUPTED DATA:', arr[i]);
                 continue;
             }
             promises.push
@@ -948,7 +948,7 @@ function import_subscription_list(json_file)
     {
         if(err.code === 'ENOENT')
         {
-            console.error(`=>Error: File not found`);
+            console.error(`=> Error: File not found`);
             process.exit(0);
         }
         else
@@ -1059,7 +1059,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.5');
+    console.info('vidlist 0.0.6');
     process.exit(0);
 }
 
@@ -1081,8 +1081,13 @@ open_db_global()
     else if(opt.options.update || opt.options.generate || opt.options.open)
     {
         if(opt.options.update)
-                return download_and_save_feed()
-                .then(() => keep_db_shorter());
+            return download_and_save_feed()
+            .then(() =>
+            {
+                if(global.prog)
+                process.stdout.write(': Removing any older [see -h] data from db\r');
+            })
+            .then(() => keep_db_shorter());
     }
     else if(validator.isURL(process.argv[2]))
     {
@@ -1123,7 +1128,7 @@ open_db_global()
     if(opt.options.generate) console.info('--Generated HTML');
     if(opt.options.open)
     {
-        console.info('--Opening HTML with your default web browser');
+        process.stdout.write(': Opening HTML with your default web browser\r');
         return opn(global.html);
     }
     else
@@ -1131,8 +1136,14 @@ open_db_global()
         return close_everything(0);
     }
 })
+.then(() =>
+{
+    process.stdout.write(`                                                 \r`);
+    console.info('--Opened HTML with your default web browser');
+    return true;
+})
 .catch((err) =>
 {
-    console.error('=>There was an error in operation:\n', err);
+    console.error('=> There was an error in operation:\n', err);
     close_everything(1);
 });

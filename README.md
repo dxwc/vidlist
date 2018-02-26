@@ -1,5 +1,5 @@
 A simple command line program to subscribe to youtube channels and
-view link/thumbnail of videos in a locally generated html page. No
+view thumbnail links of videos in a locally generated html page. No
 youtube/google account needed.
 
 # Setup
