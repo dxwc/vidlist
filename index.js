@@ -1059,7 +1059,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.6');
+    console.info('vidlist 0.0.7');
     process.exit(0);
 }
 
@@ -1128,19 +1128,20 @@ open_db_global()
     if(opt.options.generate) console.info('--Generated HTML');
     if(opt.options.open)
     {
-        process.stdout.write(': Opening HTML with your default web browser\r');
-        return opn(global.html);
+        return opn(global.html, { wait : false });
     }
     else
     {
-        return close_everything(0);
+        return true;
     }
 })
 .then(() =>
 {
-    process.stdout.write(`                                                 \r`);
-    console.info('--Opened HTML with your default web browser');
-    return true;
+    if(opt.options.open)
+    {
+        console.info('--Asked OS to open HTML with your default web browser');
+    }
+    close_everything(0);
 })
 .catch((err) =>
 {

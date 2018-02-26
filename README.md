@@ -51,6 +51,13 @@ or
 + Can easily export and import subscription as text (JSON) file
 + Can easily add and remove channels from subscriptions
 
+# Changelog
+
+### 0.0.7
+- Prevent potential running of 'open' command until browser closes
+### 0.0.6
+- Minor progress/help texts fixes
+
 ----
 
 This software was not produced by or directly for YouTube, LLC and has no
