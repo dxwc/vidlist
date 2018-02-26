@@ -8,11 +8,11 @@ youtube/google account needed.
    higher than 6 should be fine)
 2. Run command: `npm install -g vidlist`
     + Unix may need `sudo`
-    + Winodws may need running cmd as admistrator
+    + Windows may need running cmd as admistrator
 
 + To update to latest version anytime after above installation, run `npm update -g vidlist`
     + Unix may need `sudo`
-    + Winodws may need running cmd as admistrator
+    + Windows may need running cmd as admistrator
 
 # Use
 
