@@ -59,7 +59,7 @@ function download_page(link, method) {
 function is_valid_yt_url(url) {
 	try {
 		if
-		(
+        (
 			url.match(/https:\/\/www.youtube.com\/watch\?v=.+/) !== null ||
 			url.match(/https:\/\/www.youtube.com\/channel\/.+/) !== null ||
 			url.match(/https:\/\/www.youtube.com\/user\/.+/) !== null ||
@@ -81,7 +81,7 @@ function parse_channel_id(html_page) {
 	if (id_string_found !== -1) {
 		let ch_id = html_page.substring(id_string_found + 26, id_string_found + 26 + 24);
 		if
-		(
+        (
 			!validator.isWhitelisted
 				(
 				ch_id.toLowerCase(),
@@ -155,46 +155,46 @@ function open_db_global() {
 				sql_promise
 					(
 					`
-					CREATE TABLE IF NOT EXISTS subscriptions
-					(
-						channel_id_id INTEGER PRIMARY KEY AUTOINCREMENT,
-						channel_id    TEXT UNIQUE NOT NULL,
-						channel_name  TEXT
-					);
-					`
+                    CREATE TABLE IF NOT EXISTS subscriptions
+                    (
+                        channel_id_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        channel_id    TEXT UNIQUE NOT NULL,
+                        channel_name  TEXT
+                    );
+                    `
 					)
 					.then(() => {
 						return sql_promise
 							(
 							`
-						CREATE TABLE IF NOT EXISTS videos
-						(
-							channel_id_id     INTEGER REFERENCES
-											  subscriptions(channel_id_id),
-							video_id          TEXT PRIMARY KEY,
-							video_title       TEXT,
-							video_published   INTEGER,
-							video_description TEXT
-						);
-						`
+                        CREATE TABLE IF NOT EXISTS videos
+                        (
+                            channel_id_id     INTEGER REFERENCES
+                                              subscriptions(channel_id_id),
+                            video_id          TEXT PRIMARY KEY,
+                            video_title       TEXT,
+                            video_published   INTEGER,
+                            video_description TEXT
+                        );
+                        `
 							);
 					})
 					.then(() => {
 						return sql_promise
 							(
 							`
-						CREATE INDEX IF NOT EXISTS video_published_i
-						ON videos(video_published DESC);
-						`
+                        CREATE INDEX IF NOT EXISTS video_published_i
+                        ON videos(video_published DESC);
+                        `
 							);
 					})
 					.then(() => {
 						return sql_promise
 							(
 							`
-						CREATE UNIQUE INDEX IF NOT EXISTS channel_id_i
-						ON subscriptions(channel_id);
-						`
+                        CREATE UNIQUE INDEX IF NOT EXISTS channel_id_i
+                        ON subscriptions(channel_id);
+                        `
 							);
 					})
 					.then(() => {
@@ -227,11 +227,11 @@ function subscribe(youtube_url) {
 			db.run
 				(
 				`
-			INSERT INTO subscriptions
-				(channel_id, channel_name)
-			VALUES
-				('${ch_id}', '${ch_name}');
-			`,
+            INSERT INTO subscriptions
+                (channel_id, channel_name)
+            VALUES
+                ('${ch_id}', '${ch_name}');
+            `,
 				(result) => {
 					if (result && result.errno) {
 						if (result.errno == 19)
@@ -257,10 +257,10 @@ function keep_db_shorter() {
 		db.run
 			(
 			`
-			DELETE
-				FROM videos
-			WHERE
-				video_published < ${
+            DELETE
+                FROM videos
+            WHERE
+                video_published < ${
 			(new Date().getTime() / 1000) - global.old_video_limit_sec}`,
 			(err) => {
 				if (err) reject(err);
@@ -275,8 +275,8 @@ function list_subscriptions(names_only) {
 		db.all
 			(
 			`
-			SELECT * FROM subscriptions
-			`,
+            SELECT * FROM subscriptions
+            `,
 			(err, rows) => {
 				if (err) reject(err);
 				if (names_only) {
@@ -311,20 +311,20 @@ function insert_entries(values) {
 		db.run
 			(
 			`
-			INSERT OR REPLACE INTO videos
-			(
-				channel_id_id,
-				video_id,
-				video_title,
-				video_published,
-				video_description
-			)
-			VALUES
-			${values}
-			`,
+            INSERT OR REPLACE INTO videos
+            (
+                channel_id_id,
+                video_id,
+                video_title,
+                video_published,
+                video_description
+            )
+            VALUES
+            ${values}
+            `,
 			(result, err) => {
 				if
-				(
+                (
 					result && typeof (result.errno) === 'number' &&
 					result.errno !== 19
 				) {
@@ -369,7 +369,7 @@ function parse_and_save_data(page, ch_id_id) {
 			v_description_post = page.indexOf('</media:description>');
 
 			if
-			(
+            (
 				v_id_pre === -1 ||
 				v_id_post === -1 ||
 				v_title_pre === -1 ||
@@ -530,19 +530,19 @@ function get_video_data() {
 		db.all
 			(
 			`
-			SELECT
-				channel_id,
-				channel_name,
-				video_id,
-				video_title,
-				video_published,
-				video_description
-			FROM
-			subscriptions
-				INNER JOIN
-			(SELECT * FROM videos ORDER BY video_published DESC) vi
-			ON subscriptions.channel_id_id = vi.channel_id_id
-			`,
+            SELECT
+                channel_id,
+                channel_name,
+                video_id,
+                video_title,
+                video_published,
+                video_description
+            FROM
+            subscriptions
+                INNER JOIN
+            (SELECT * FROM videos ORDER BY video_published DESC) vi
+            ON subscriptions.channel_id_id = vi.channel_id_id
+            `,
 			(err, rows) => {
 				if (err) return reject(err);
 				return resolve(rows);
@@ -556,12 +556,12 @@ function get_channel_data() {
 		db.all
 			(
 			`
-			SELECT
-				channel_id,
-				channel_name
-			FROM
-				subscriptions
-			`,
+            SELECT
+                channel_id,
+                channel_name
+            FROM
+                subscriptions
+            `,
 			(err, rows) => {
 				if (err) return reject(err);
 				return resolve(rows);
@@ -575,12 +575,13 @@ function generate_html() {
 	return Promise.all([get_video_data(), get_channel_data()])
 		.then((result) => {
 
-			let full = `<!DOCTYPE html>
+			let full =
+				`<!DOCTYPE html>
 <html>
 <head>
-	<meta charset='UTF-8'>
-	<title>Subscriptions</title>
-	<style type='text/css'>
+    <meta charset='UTF-8'>
+    <title>Subscriptions</title>
+    <style type='text/css'>
 	html,
 	body {
 	  margin: 0;
@@ -758,19 +759,19 @@ function remove_subscription() {
 							sql_promise
 								(
 								`
-							DELETE FROM videos
-							WHERE
-								channel_id_id=${channel_number}
-							`
+                            DELETE FROM videos
+                            WHERE
+                                channel_id_id=${channel_number}
+                            `
 								)
 								.then(() => {
 									return sql_promise
 										(
 										`
-								DELETE FROM subscriptions
-								WHERE
-									channel_id_id=${channel_number}
-								`
+                                DELETE FROM subscriptions
+                                WHERE
+                                    channel_id_id=${channel_number}
+                                `
 										);
 								})
 								.then(() => {
@@ -790,7 +791,7 @@ function remove_subscription() {
 function close_everything(code) {
 	return new Promise((resolve, reject) => {
 		db.close((err) => {
-			if (err) { console.error('=>Error:\n', err); process.exit(1) }
+			if (err) { console.error('=> Error:\n', err); process.exit(1) }
 			else resolve();
 		});
 	})
@@ -836,11 +837,11 @@ function insert_a_subscription(ch_id, ch_name) {
 		db.run
 			(
 			`
-			INSERT INTO subscriptions
-				(channel_id, channel_name)
-			VALUES
-				('${ch_id}', '${ch_name}');
-			`,
+            INSERT INTO subscriptions
+                (channel_id, channel_name)
+            VALUES
+                ('${ch_id}', '${ch_name}');
+            `,
 			(result) => {
 				if (result && result.errno) {
 					if (result.errno == 19)
@@ -866,7 +867,7 @@ function import_subscription_list(json_file) {
 			arr = JSON.parse(imported);
 		}
 		catch (err) {
-			console.error(`=>Error: File doesn't contain valid JSON`);
+			console.error(`=> Error: File doesn't contain valid JSON`);
 			throw err;
 		}
 
@@ -879,7 +880,7 @@ function import_subscription_list(json_file) {
 					'abcdefghijklmnopqrstuvwxyz0123456789-_'
 					)
 			) {
-				console.error('SKIPPING CORRUPTED DATA:', arr[i]);
+				console.error('=> SKIPPING CORRUPTED DATA:', arr[i]);
 				continue;
 			}
 			promises.push
@@ -896,7 +897,7 @@ function import_subscription_list(json_file) {
 	}
 	catch (err) {
 		if (err.code === 'ENOENT') {
-			console.error(`=>Error: File not found`);
+			console.error(`=> Error: File not found`);
 			process.exit(0);
 		}
 		else {
@@ -972,7 +973,7 @@ EXAMPLE Usages:
 
 vl https://www.youtube.com/watch?v=EeNiqKNtpAA
 
-	or
+    or
 
 vl -s https://www.youtube.com/watch?v=EeNiqKNtpAA
 
@@ -1003,7 +1004,7 @@ if (process.argv.length <= 2 || opt.options.help) {
 }
 
 if (opt.options.version) {
-	console.info('vidlist 0.0.4');
+	console.info('vidlist 0.0.7');
 	process.exit(0);
 }
 
@@ -1024,6 +1025,10 @@ open_db_global()
 		else if (opt.options.update || opt.options.generate || opt.options.open) {
 			if (opt.options.update)
 				return download_and_save_feed()
+					.then(() => {
+						if (global.prog)
+							process.stdout.write(': Removing any older [see -h] data from db\r');
+					})
 					.then(() => keep_db_shorter());
 		}
 		else if (validator.isURL(process.argv[2])) {
@@ -1037,7 +1042,7 @@ open_db_global()
 	})
 	.then(() => {
 		if
-	(
+    (
 			opt.options.list ||
 			opt.options.subscribe ||
 			opt.options.remove ||
@@ -1058,14 +1063,19 @@ open_db_global()
 	.then(() => {
 		if (opt.options.generate) console.info('--Generated HTML');
 		if (opt.options.open) {
-			console.info('--Opening HTML with your default web browser');
-			return opn(global.html);
+			return opn(global.html, { wait: false });
 		}
 		else {
-			return close_everything(0);
+			return true;
 		}
 	})
+	.then(() => {
+		if (opt.options.open) {
+			console.info('--Asked OS to open HTML with your default web browser');
+		}
+		close_everything(0);
+	})
 	.catch((err) => {
-		console.error('=>There was an error in operation:\n', err);
+		console.error('=> There was an error in operation:\n', err);
 		close_everything(1);
 	});
