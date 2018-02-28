@@ -673,89 +673,156 @@ function generate_html()
     <meta charset='UTF-8'>
     <title>Subscriptions</title>
     <style type='text/css'>
-        body { background-color: #B4B4B4; }
-        h2 { font-size: 100%; overflow: hidden; }
-        img { width: 100%; }
-        a
-        {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-        .container
-        {
-            float: left;
-            padding-left: 2%;
-            padding-right: 2%;
-            width: 19.77%;
-            background-color: #ddd;
-            padding-top: 2%;
-            margin-left: 1%;
-            margin-bottom: 1%;
-            height: 298px;
-            overflow: auto;
-        }
-        .channels
-        {
-            float: left;
-            width: 96%;
-            padding: 2%;
-            padding-top: 1%;
-        }
-        ul
-        {
-            -moz-column-count: 4;
-            -moz-column-gap: 1%;
-            -webkit-column-count: 4;
-            -webkit-column-gap: 1%;
-            column-count: 4;
-            column-gap: 1%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
+	html,
+	body {
+	  margin: 0;
+	  padding: 0;
+	  background-color: #F6F9FC;
+	  -webkit-font-smoothing: antialiased;
+	  -moz-osx-font-smoothing: grayscale;
+	}
+
+	h3 {
+	  font-size: .95em;
+	  max-width: inherit;
+	  padding-bottom: 5px;
+	}
+
+	p {
+	  font-size: .85rem;
+	  font-weight: normal;
+	  color: #6b7c93;
+	}
+
+	img {
+	  width: 100%;
+	  border-top-right-radius: 3px;
+	  border-top-left-radius: 3px;
+	}
+
+	a {
+	  text-decoration: none;
+	  color: rgb(34, 34, 34);
+	  font-weight: bold;
+	}
+
+	a:hover {
+	  color: #ff0000;
+	}
+
+	.container {
+	  width: 84.5%;
+	  margin-left: 15.5%;
+	  float: left;
+	  display: flex;
+	  flex-wrap: wrap;
+	  flex-direction: row;
+	  align-content: space-between;
+	  overflow-x: hidden;
+	}
+
+	.card {
+	  float: left;
+	  width: 24%;
+	  margin: 6px;
+	  height: auto;
+	  background-color: #fff;
+	  border-radius: 3px;
+	  box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+	  -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+	  -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+	}
+
+	.card:hover {
+	  box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
+	  -webkit-box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
+	  -moz-box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
+	}
+
+	.card p,
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+	  margin: 0;
+	  margin-left: 10px;
+	}
+
+	.sidebar {
+	  background-color: #fff;
+	  float: left;
+	  width: 15%;
+	  height: 100%;
+	  position: fixed;
+	  overflow: scroll;
+	  border-left: 4px solid #ff0000;
+	  box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+	  -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+	  -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+	}
+
+	ul,
+	li {
+	  list-style-type: none;
+	  list-style-position: inside;
+	  padding: 0;
+	}
+
+	li a {
+	  width: 85%;
+	  margin: 0 auto;
+	  display: block;
+	  padding: 5px 0;
+	  padding-left: 12px;
+	  font-size: .85rem;
+	}
+
+	li a:hover {
+	  color: #fff;
+	  background-color: rgb(34, 34, 34);
+	}
+  </style>
 </head>
 <body>
-`
-        for(let i = 0; i < result[0].length; ++i)
-        {
-            full +=
-`
-    <div class='container' title='${
-        xss.inHTMLData(validator.unescape(result[0][i].channel_name))}'>
-        <a href='https://www.youtube-nocookie.com/embed/\
+`;
+
+			full += `<div class='container'>`
+			for (let i = 0; i < result[0].length; ++i) {
+				full += `
+	<div class='card' title='${xss.inHTMLData(result[0][i].channel_name)}'>
+		<a href='https://www.youtube-nocookie.com/embed/\
 ${xss.inHTMLData(result[0][i].video_id)}?rel=0'>
-            <img src='https://img.youtube.com/vi/\
+			<img src='https://img.youtube.com/vi/\
 ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
-        </a>
-        <a href='https://www.youtube.com/watch?v=\
-${xss.inHTMLData(result[0][i].video_id)}'>
-            <h2 title='${xss.inHTMLData(result[0][i].video_description)}'>\
-${xss.inHTMLData(validator.unescape(result[0][i].video_title))}</h2>
-        </a>
-    </div>`
-        }
+			<p>${xss.inHTMLData(result[0][i].channel_name)}</p>
+			<h3 title='${xss.inHTMLData(result[0][i].video_description)}'>\
+${xss.inHTMLData(result[0][i].video_title)}</h3>
+		</a>
+	</div>`;
+			}
 
-        full +=
-`
-    <div class='channels'>
-        <h3>Channels</h3>
-        <ul>`;
+			full += `</div> <!-- end container -->`
 
-        result[1].forEach((elem) =>
-        {
-            full +=
-`
-           <li><a href='https://www.youtube.com/channel/\
+			full +=
+				`
+	<div class='sidebar'>
+		<h2>Channels</h2>
+		<ul>`;
+
+			result[1].forEach((elem) => {
+				full +=
+					`
+		   <li><a href='https://www.youtube.com/channel/\
 ${xss.inHTMLData(elem.channel_id)}'>\
 ${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
-        });
+			});
 
-        full +=
-`
-        </ul>
-    </div>
-
+			full +=
+				`
+		</ul>
+	</div>
 </body>
 </html>
 `;
