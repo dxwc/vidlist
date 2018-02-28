@@ -791,15 +791,18 @@ function generate_html()
 			full += `<div class='container'>`
 			for (let i = 0; i < result[0].length; ++i) {
 				full += `
-	<div class='card' title='${xss.inHTMLData(result[0][i].channel_name)}'>
-		<a href='https://www.youtube-nocookie.com/embed/\
-${xss.inHTMLData(result[0][i].video_id)}?rel=0'>
+	<div class='card'>
+		<a href='https://www.youtube.com/embed/\
+${xss.inHTMLData(result[0][i].video_id)}?rel=0&autoplay=1'>
 			<img src='https://img.youtube.com/vi/\
 ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
-			<p>${xss.inHTMLData(result[0][i].channel_name)}</p>
+        </a>
+        <p>${xss.inHTMLData(validator.unescape(result[0][i].channel_name))}</p>
+        <a href='https://www.youtube.com/watch?v=\
+${xss.inHTMLData(result[0][i].video_id)}'>
 			<h3 title='${xss.inHTMLData(result[0][i].video_description)}'>\
-${xss.inHTMLData(result[0][i].video_title)}</h3>
-		</a>
+${xss.inHTMLData(validator.unescape(result[0][i].video_title))}</h3>
+        </a>
 	</div>`;
 			}
 

@@ -41,11 +41,11 @@ or
 + Fast
 + Doesn't need any google account/API key
 + Latest videos are always on top
-+ Processing and data are all done and kept locally, nothing runs in the background
-+ Generated HTML file contains no javascript or fancy css
++ Processings are done and data are all kept locally, nothing runs in the background
++ Generated HTML file contains no javascript
 + Basic validation and XSS protection are in place
 + It is easy to see where in the `index.js` to edit to change CSS to one's liking
-+ Tile hover shows channel name, title hover shows video description
++ Channel name infomration per video, title hover shows video description
 + Can easily add or remove channels from subscriptions
 + Can easily import or export subscription list as text (JSON) file
 
