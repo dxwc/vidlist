@@ -5,6 +5,7 @@ const path      = require('path');
 const https     = require('https');
 
 const opn       = require('opn');
+const moment    = require('moment');
 const sqlite3   = require('sqlite3');
 const validator = require('validator');
 const Getopt    = require('node-getopt');
@@ -796,13 +797,20 @@ function generate_html()
 			full += `<div class='container'>`
 			for (let i = 0; i < result[0].length; ++i) {
 				full += `
-	<div class='card'>
+    <div class='card'>
 		<a href='https://www.youtube.com/embed/\
 ${xss.inHTMLData(result[0][i].video_id)}?rel=0&autoplay=1'>
 			<img src='https://img.youtube.com/vi/\
 ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
         </a>
-        <p>${xss.inHTMLData(validator.unescape(result[0][i].channel_name))}</p>
+        <p title='Uploaded ${
+            xss.inHTMLData
+            (
+                moment.unix(result[0][i].video_published)
+                .local()
+                .fromNow()
+            )}'>\
+${xss.inHTMLData(validator.unescape(result[0][i].channel_name))}</p>
         <a href='https://www.youtube.com/watch?v=\
 ${xss.inHTMLData(result[0][i].video_id)}'>
             <h4 title='${xss.inHTMLData(result[0][i].video_description)}'>\
@@ -831,7 +839,9 @@ ${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
 			full +=
 				`
 		</ul>
-	</div>
+    </div>
+    <!-- This file was generated on ${new Date().toLocaleString()}, ${
+        new Date().getTime()} -->
 </body>
 </html>
 `;
