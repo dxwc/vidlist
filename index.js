@@ -840,6 +840,7 @@ ${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
 				`
 		</ul>
     </div>
+    <br>
     <!-- This file was generated on ${new Date().toLocaleString()}, ${
         new Date().getTime()} -->
 </body>
