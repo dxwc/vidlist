@@ -51,8 +51,17 @@ or
 
 # Changelog
 
-+ 0.0.7 - Prevent potential running of 'open' command until browser closes
-+ 0.0.6 - Minor progress/help texts fixes
++ 0.0.8
+    + CSS changed
+    + Channel name is now part of video tile instead of hover
+    + Channel name hover displays relative time since video published
+    + Fixed channel name escaping issue
+    + Thumbnail embed link autoplays on click
+    + Uses youtube-nocookie.com to youtube.com for embed link
++ 0.0.7
+    + Prevent potential running of 'open' command until browser closes
++ 0.0.6
+    + Minor progress/help texts fixes
 
 ----
 

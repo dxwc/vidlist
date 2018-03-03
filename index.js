@@ -803,7 +803,7 @@ ${xss.inHTMLData(result[0][i].video_id)}?rel=0&autoplay=1'>
 			<img src='https://img.youtube.com/vi/\
 ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
         </a>
-        <p title='Uploaded ${
+        <p title='Published ${
             xss.inHTMLData
             (
                 moment.unix(result[0][i].video_published)
@@ -1145,7 +1145,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.7');
+    console.info('vidlist 0.0.8');
     process.exit(0);
 }
 
