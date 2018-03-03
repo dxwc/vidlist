@@ -682,22 +682,15 @@ function generate_html()
 	  -moz-osx-font-smoothing: grayscale;
 	}
 
-	h3 {
-	  font-size: .95em;
-	  max-width: inherit;
-	  padding-bottom: 5px;
-	}
-
 	p {
-	  font-size: .85rem;
 	  font-weight: normal;
 	  color: #6b7c93;
 	}
 
 	img {
 	  width: 100%;
-	  border-top-right-radius: 3px;
-	  border-top-left-radius: 3px;
+	  border-top-right-radius: 1.5%;
+	  border-top-left-radius: 1.5%;
 	}
 
 	a {
@@ -706,31 +699,33 @@ function generate_html()
 	  font-weight: bold;
 	}
 
-	a:hover {
-	  color: #ff0000;
-	}
-
 	.container {
-	  width: 84.5%;
-	  margin-left: 15.5%;
+	  width: 100%;
+	  margin-left: 0;
 	  float: left;
 	  display: flex;
 	  flex-wrap: wrap;
 	  flex-direction: row;
 	  align-content: space-between;
-	  overflow-x: hidden;
+      overflow-x: hidden;
+      margin-bottom: 2%;
 	}
 
 	.card {
 	  float: left;
-	  width: 24%;
-	  margin: 6px;
+	  width: 19.25%;
+      margin-left: 0.625%;
+      margin-right: 0;
+      margin-bottom: 0.2em;
+      margin-top: 0.2em;
 	  height: auto;
 	  background-color: #fff;
-	  border-radius: 3px;
+	  border-radius: 0.5%;
 	  box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
 	  -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-	  -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+      -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+      overflow: hidden;
+      text-overflow: ellipse;
 	}
 
 	.card:hover {
@@ -747,36 +742,46 @@ function generate_html()
 	h5,
 	h6 {
 	  margin: 0;
-	  margin-left: 10px;
+      margin-left: 2%;
+      margin-right: 2%;
+    }
+
+    h4 {
+        padding-bottom: 0.15em;
+    }
+
+    .card p {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+	.channels {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipse;
 	}
 
-	.sidebar {
-	  background-color: #fff;
-	  float: left;
-	  width: 15%;
-	  height: 100%;
-	  position: fixed;
-	  overflow: scroll;
-	  border-left: 4px solid #ff0000;
-	  box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-	  -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-	  -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-	}
-
-	ul,
+    ul {
+        -moz-column-count: 4;
+        -moz-column-gap: 1%;
+        -webkit-column-count: 4;
+        -webkit-column-gap: 1%;
+        column-count: 4;
+        column-gap: 1%;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    },
 	li {
-	  list-style-type: none;
-	  list-style-position: inside;
-	  padding: 0;
+      padding: 0;
 	}
 
 	li a {
 	  width: 85%;
 	  margin: 0 auto;
 	  display: block;
-	  padding: 5px 0;
-	  padding-left: 12px;
-	  font-size: .85rem;
+	  padding: 1% 0%;
+	  padding-left: 3%;
 	}
 
 	li a:hover {
@@ -800,18 +805,19 @@ ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
         <p>${xss.inHTMLData(validator.unescape(result[0][i].channel_name))}</p>
         <a href='https://www.youtube.com/watch?v=\
 ${xss.inHTMLData(result[0][i].video_id)}'>
-			<h3 title='${xss.inHTMLData(result[0][i].video_description)}'>\
-${xss.inHTMLData(validator.unescape(result[0][i].video_title))}</h3>
+            <h4 title='${xss.inHTMLData(result[0][i].video_description)}'>\
+${xss.inHTMLData(validator.unescape(result[0][i].video_title))}</h4>
         </a>
 	</div>`;
 			}
 
-			full += `</div> <!-- end container -->`
+			full += `</div>`
 
 			full +=
-				`
-	<div class='sidebar'>
-		<h2>Channels</h2>
+                `
+    <div class='channels'>
+        <h3>Channels</h3>
+        <br>
 		<ul>`;
 
 			result[1].forEach((elem) => {
