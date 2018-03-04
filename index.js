@@ -1215,7 +1215,7 @@ open_db_global()
     if(opt.options.generate) console.info('--Generated HTML');
     if(opt.options.open)
     {
-        return opn(global.html, { wait : false });
+        return opn(global.html);
     }
     else
     {
