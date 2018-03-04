@@ -1146,7 +1146,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.0.8');
+    console.info('vidlist 0.0.9');
     process.exit(0);
 }
 

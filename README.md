@@ -51,6 +51,8 @@ or
 
 # Changelog
 
++ 0.0.9
+    + Fixed html not opening in windows issue
 + 0.0.8
     + CSS changed
     + Channel name is now part of video tile instead of hover
