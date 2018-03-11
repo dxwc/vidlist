@@ -48,7 +48,12 @@ catch(err)
     }
 }
 
-function download_page(link, method)
+/**
+ * Asynchronously downloads content given https link
+ * @param {String} link Full https youtube url
+ * @returns {Promise} Resolved parameter is the downloaded content
+ */
+function download_page(link)
 {
     return new Promise((resolve, reject) =>
     {
@@ -67,6 +72,11 @@ function download_page(link, method)
     });
 }
 
+/**
+ * Regex check to see is valid watch, channel, user or a shortend yt url
+ * @param {String} url Full https youtube url
+ * @returns {Boolean}
+ */
 function is_valid_yt_url(url)
 {
     try
@@ -90,6 +100,11 @@ function is_valid_yt_url(url)
     return false;
 }
 
+/**
+ * Find and validate data-channel-external-id
+ * @param {String} html_page Content of the downloaded page
+ * @returns {(String|Null)} ID or null
+ */
 function parse_channel_id(html_page)
 {
     let id_string_found = html_page.search('data-channel-external-id=\"');
@@ -120,6 +135,11 @@ function parse_channel_id(html_page)
     }
 }
 
+/**
+ * Use a channle ID to download content of a channel page to extract channel name
+ * @param {String} channel_id A valid youtube channel ID
+ * @returns {Promise<String>} Resolve with channel name, reject with error info
+ */
 function parse_channel_name(channel_id)
 {
     return new Promise((resolve, reject) =>
@@ -157,6 +177,11 @@ function parse_channel_name(channel_id)
     });
 }
 
+/**
+ * Run a sql command to sqlite3
+ * @param {String} command SQL command
+ * @returns {Promise}
+ */
 function sql_promise(command)
 {
     return new Promise((resolve, reject) =>
@@ -174,6 +199,10 @@ function sql_promise(command)
     });
 }
 
+/**
+ * Open database for use, create tables and indexes if opening for the first time
+ * @returns {Promise}
+*/
 function open_db_global()
 {
     return new Promise((resolve, reject) =>
@@ -245,6 +274,11 @@ function open_db_global()
     })
 }
 
+/**
+ * Verify url, download content, parse channel ID and name and then insert an entry
+ * to subscriptions table of sqlite3 db
+ * @param {String} youtube_url A acceptable youtube url
+ */
 function subscribe(youtube_url)
 {
     if(typeof(youtube_url) !== 'string' || !is_valid_yt_url(youtube_url))
@@ -264,6 +298,7 @@ function subscribe(youtube_url)
     .then((name) =>
     {
         ch_name = validator.escape(name);
+        // TODO - get rid of callback and chain promise:
         db.run
         (
             `
@@ -295,6 +330,11 @@ function subscribe(youtube_url)
     });
 }
 
+/**
+ * Deletes video entries from videos db whose publish date are older than the limit
+ * set by global.old_video_limit_sec variable
+ * @returns {Promise}
+*/
 function keep_db_shorter()
 {
     return new Promise((resolve, reject) =>
@@ -316,6 +356,10 @@ function keep_db_shorter()
     });
 }
 
+/**
+ * Prints subscriptions list to stdout
+ * @param {Boolean} names_only To display only channel names
+ */
 function list_subscriptions(names_only)
 {
     return new Promise((resolve, reject) =>
@@ -357,6 +401,10 @@ function list_subscriptions(names_only)
     });
 }
 
+/**
+ * Insert entries into videos table in sqlite3 db
+ * @param {String} values String must be formatted as sql values data
+ */
 function insert_entries(values)
 {
     return new Promise((resolve, reject) =>
@@ -396,6 +444,13 @@ function insert_entries(values)
     });
 }
 
+/**
+ * Extract and gather video id, title, published and description information
+ * @param {String} page Downloaded rss content of a youtube channel
+ * @param {String} ch_id_id Associated db PK id
+ * @returns {Promise} Resolve indicates both parsing and saving data has been
+ * completed
+ */
 function parse_and_save_data(page, ch_id_id)
 {
     let v_id_pre = -1;
@@ -487,8 +542,14 @@ function parse_and_save_data(page, ch_id_id)
     });
 }
 
+/** Used by process_one(...) to display prcessing progress */
 global.remaining = 0;
 
+/**
+ * Downloads content of a channel's rss feed and pass data to parse_and_save_data(...)
+ * @param {Number} channel_id_id The database PK from db of the channel to process
+ * @param {String} channel_id The channel ID
+ */
 function process_one(channel_id_id, channel_id)
 {
     return Promise.resolve()
@@ -516,6 +577,10 @@ function process_one(channel_id_id, channel_id)
     });
 }
 
+/**
+ * Upadate videos data by parsing and processing all channel's rss feed
+ * @returns {Promise} A promise chain representing all processing for update
+*/
 function download_and_save_feed()
 {
     return new Promise((resolve, reject) =>
@@ -609,6 +674,9 @@ function download_and_save_feed()
     });
 }
 
+/**
+ * @returns {Promise} All video data as well as channel id and title
+*/
 function get_video_data()
 {
     return new Promise((resolve, reject) =>
@@ -638,6 +706,9 @@ function get_video_data()
     });
 }
 
+/**
+ * @returns {Promise} Returns all channel_id and channel_name
+*/
 function get_channel_data()
 {
     return new Promise((resolve, reject) =>
@@ -660,7 +731,10 @@ function get_channel_data()
     });
 }
 
-
+/**
+ * Generates html
+ * @returns {Promise}
+*/
 function generate_html()
 {
     return Promise.all([get_video_data(), get_channel_data()])
@@ -851,6 +925,10 @@ ${xss.inHTMLData(validator.unescape(elem.channel_name))}</a></li>`;
     });
 }
 
+/**
+ * Promt to enter integer, if there is a matching ch_ch_id, then delete
+ * @returns {Promise}
+ */
 function remove_subscription()
 {
     return list_subscriptions(true)
@@ -906,10 +984,15 @@ function remove_subscription()
     });
 }
 
+/**
+ * Close db and exit
+ * @param {Number} code Exit code
+ */
 function close_everything(code)
 {
     return new Promise((resolve, reject) =>
     {
+        // TODO: need global ?
         db.close((err) =>
         {
             if(err) { console.error('=> Error:\n', err); process.exit(1) }
@@ -922,6 +1005,10 @@ function close_everything(code)
     });
 }
 
+/**
+ * Convert subscription list (name and id) into JSON and save at export_file location
+ * @returns {Promise}
+ */
 function export_subscription_list()
 {
     return new Promise((resolve, reject) =>
@@ -958,6 +1045,11 @@ function export_subscription_list()
     });
 }
 
+/**
+ * Add a subscription given channel ID and channel name
+ * @param {String} ch_id
+ * @param {String} ch_name
+ */
 function insert_a_subscription(ch_id, ch_name)
 {
     return new Promise((resolve, reject) =>
@@ -989,6 +1081,11 @@ function insert_a_subscription(ch_id, ch_name)
     });
 }
 
+/**
+ * Given valid exported subscription JSON, imports subscription into db
+ * @param {String} json_file
+ * @returns {Promise}
+ */
 function import_subscription_list(json_file)
 {
     try
