@@ -271,7 +271,51 @@ function open_db_global()
                 })
             }
         );
-    })
+    });
+}
+
+/**
+ * Used by subscribe() to insert an subscription
+ * @param {String} ch_id Channel ID
+ * @param {String} ch_name Channel name
+ * @returns {Promise}
+ */
+function insert_for_subscribe(ch_id, ch_name)
+{
+    return new Promise((resolve, reject) =>
+    {
+        db.run
+        (
+            `
+            INSERT INTO subscriptions
+                (channel_id, channel_name)
+            VALUES
+                ('${ch_id}', '${ch_name}');
+            `,
+            (result) =>
+            {
+                if(result && result.errno)
+                {
+                    if(result.errno == 19)
+                        console.info(
+                            `You were already subscribed to '${ch_name}' (${ch_id})`);
+                    else
+                    {
+                        reject(result);
+                    }
+                }
+                else if(result === null)
+                {
+                    console.info(`Subscribed to '${ch_name}' (${ch_id})`);
+                    resolve();
+                }
+                else
+                {
+                    reject('Undefined error');
+                }
+            }
+        );
+    });
 }
 
 /**
@@ -298,31 +342,7 @@ function subscribe(youtube_url)
     .then((name) =>
     {
         ch_name = validator.escape(name);
-        // TODO - get rid of callback and chain promise:
-        db.run
-        (
-            `
-            INSERT INTO subscriptions
-                (channel_id, channel_name)
-            VALUES
-                ('${ch_id}', '${ch_name}');
-            `,
-            (result) =>
-            {
-                if(result && result.errno)
-                {
-                    if(result.errno == 19)
-                        console.info(
-                            `You were already subscribed to '${ch_name}' (${ch_id})`);
-                    else
-                        console.info(result);
-                }
-                else if(result === null)
-                    console.info(`Subscribed to '${ch_name}' (${ch_id})`);
-                else
-                    console.error('Undefined error');
-            }
-        );
+        return insert_for_subscribe(ch_id, ch_name);
     })
     .catch((err) =>
     {
