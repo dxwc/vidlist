@@ -7,6 +7,7 @@ const https     = require('https');
 const opn       = require('opn');
 const moment    = require('moment');
 const sqlite3   = require('sqlite3');
+const entities  = require('entities');
 const validator = require('validator');
 const Getopt    = require('node-getopt');
 const xss       = require('xss-filters');
@@ -770,63 +771,63 @@ function generate_html()
     <style type='text/css'>
 	html,
 	body {
-	  margin: 0;
-	  padding: 0;
-	  background-color: #F6F9FC;
-	  -webkit-font-smoothing: antialiased;
-	  -moz-osx-font-smoothing: grayscale;
+        margin: 0;
+        padding: 0;
+        background-color: #F6F9FC;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
 	}
 
 	p {
-	  font-weight: normal;
-	  color: #6b7c93;
+        font-weight: normal;
+        color: #6b7c93;
 	}
 
 	img {
-	  width: 100%;
-	  border-top-right-radius: 1.5%;
-	  border-top-left-radius: 1.5%;
+        width: 100%;
+        border-top-right-radius: 1.5%;
+        border-top-left-radius: 1.5%;
 	}
 
 	a {
-	  text-decoration: none;
-	  color: rgb(34, 34, 34);
-	  font-weight: bold;
+        text-decoration: none;
+        color: rgb(34, 34, 34);
+        font-weight: bold;
 	}
 
 	.container {
-	  width: 100%;
-	  margin-left: 0;
-	  float: left;
-	  display: flex;
-	  flex-wrap: wrap;
-	  flex-direction: row;
-	  align-content: space-between;
-      overflow-x: hidden;
-      margin-bottom: 2%;
+        width: 100%;
+        margin-left: 0;
+        float: left;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        align-content: space-between;
+        overflow-x: hidden;
+        margin-bottom: 2%;
 	}
 
 	.card {
-	  float: left;
-	  width: 19.25%;
-      margin-left: 0.625%;
-      margin-right: 0;
-      margin-bottom: 0.2em;
-      margin-top: 0.2em;
-	  height: auto;
-	  background-color: #fff;
-	  border-radius: 0.5%;
-	  box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-	  -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-      -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
-      overflow: hidden;
-      text-overflow: ellipse;
+        float: left;
+        width: 19.25%;
+        margin-left: 0.625%;
+        margin-right: 0;
+        margin-bottom: 0.2em;
+        margin-top: 0.2em;
+        height: auto;
+        background-color: #fff;
+        border-radius: 0.5%;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+        -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+        -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, .08);
+        overflow: hidden;
+        text-overflow: ellipse;
 	}
 
 	.card:hover {
-	  box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
-	  -webkit-box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
-	  -moz-box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
+        box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
+        -webkit-box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
+        -moz-box-shadow: 2px 2px 9px rgba(0, 0, 0, .1);
 	}
 
 	.card p,
@@ -836,9 +837,9 @@ function generate_html()
 	h4,
 	h5,
 	h6 {
-	  margin: 0;
-      margin-left: 2%;
-      margin-right: 2%;
+        margin: 0;
+        margin-left: 2%;
+        margin-right: 2%;
     }
 
     h4 {
@@ -868,20 +869,20 @@ function generate_html()
         padding: 0;
     },
 	li {
-      padding: 0;
+        padding: 0;
 	}
 
 	li a {
-	  width: 85%;
-	  margin: 0 auto;
-	  display: block;
-	  padding: 1% 0%;
-	  padding-left: 3%;
+        width: 85%;
+        margin: 0 auto;
+        display: block;
+        padding: 1% 0%;
+        padding-left: 3%;
 	}
 
 	li a:hover {
-	  color: #fff;
-	  background-color: rgb(34, 34, 34);
+        color: #fff;
+        background-color: rgb(34, 34, 34);
 	}
   </style>
 </head>
@@ -907,7 +908,10 @@ ${xss.inHTMLData(result[0][i].video_id)}/mqdefault.jpg'>
 ${xss.inHTMLData(validator.unescape(result[0][i].channel_name))}</p>
         <a href='https://www.youtube.com/watch?v=\
 ${xss.inHTMLData(result[0][i].video_id)}'>
-            <h4 title='${xss.inHTMLData(result[0][i].video_description)}'>\
+            <h4 title='${xss.inHTMLData
+                (entities.encodeHTML
+                    (validator.unescape
+                        (result[0][i].video_description)))}'>\
 ${xss.inHTMLData(validator.unescape(result[0][i].video_title))}</h4>
         </a>
 	</div>`;

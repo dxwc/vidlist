@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/dxwc/vidlist#readme",
   "dependencies": {
+    "entities": "^1.1.1",
     "moment": "^2.21.0",
     "node-getopt": "^0.2.3",
     "opn": "^5.1.0",

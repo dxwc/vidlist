@@ -50,8 +50,10 @@ or
 + Can easily import or export subscription list as text (JSON) file
 
 # Changelog
-
-+ 0.0.9
++ 0.1.0 --> **master branch**
+    + Fixed description text not being displayed properly on special characters
+    + Fixed a minor wrongly ordered set of operations during subscribing
++ 0.0.9 --> **NPM current**
     + Fixed html not opening in windows issue
 + 0.0.8
     + CSS changed
