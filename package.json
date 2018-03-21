@@ -9,10 +9,7 @@
     "sub": "index.js"
   },
   "scripts": {
-    "start": "node index.js",
-    "jsdoc": "npx jsdoc index.js -d ./docs/dev_docs/jsdoc/",
-    "jsdoc2md": "npx jsdoc2md index.js > ./docs/dev_docs/jsdoc2md.md",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -32,9 +29,5 @@
     "sqlite3": "^3.1.13",
     "validator": "^9.1.1",
     "xss-filters": "^1.2.7"
-  },
-  "devDependencies": {
-    "jsdoc": "^3.5.5",
-    "jsdoc-to-markdown": "^4.0.1"
   }
 }
