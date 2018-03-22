@@ -295,6 +295,8 @@ function insert_for_subscribe(ch_id, ch_name)
             `,
             (result) =>
             {
+                if(global.is_import === undefined)
+                process.stdout.write('                                     \r');
                 if(result && result.errno)
                 {
                     if(result.errno == 19)
@@ -338,14 +340,30 @@ function subscribe(youtube_url)
     let ch_id = undefined;
     let ch_name = undefined;
 
-    return download_page(youtube_url)
+    return Promise.resolve()
+    .then(() =>
+    {
+        if(global.is_import === undefined)
+            process.stdout.write(': Fetching a page to extract data...\r');
+        return download_page(youtube_url);
+    })
     .then((page) =>
     {
+        if(global.is_import === undefined)
+        {
+            process.stdout.write('                                      \r');
+            process.stdout.write(': Extracting information...\r');
+        }
         ch_id = parse_channel_id(page);
         return parse_channel_name(ch_id);
     })
     .then((name) =>
     {
+        if(global.is_import === undefined)
+        {
+            process.stdout.write('                                      \r');
+            process.stdout.write(': Saving extracted data to database...\r');
+        }
         ch_name = validator.escape(name);
         return insert_for_subscribe(ch_id, ch_name);
     })
@@ -1368,7 +1386,10 @@ open_db_global()
     else if(opt.options.export)
         return export_subscription_list();
     else if(opt.options.import)
+    {
+        global.is_import = true;
         return import_subscription_list(opt.options.import);
+    }
     else if(opt.options.remove)
         return remove_subscription();
     else if(opt.options.subscribe)

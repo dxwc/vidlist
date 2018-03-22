@@ -52,6 +52,7 @@ or
 # Changelog
 
 + 0.1.0 --> **master branch**
+    + Print status text on individual subscription
     + Open option will not wait for browser to close after opening the html
       on non-windows platforms if the open option was invoked when the
       default browser was not open already
