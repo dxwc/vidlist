@@ -1434,7 +1434,8 @@ open_db_global()
     if(opt.options.generate) console.info('--Generated HTML');
     if(opt.options.open)
     {
-        return opn(global.html);
+        if(require('os').platform() === 'win32') return opn(global.html);
+        else return opn(global.html, { wait : false });
     }
     else
     {

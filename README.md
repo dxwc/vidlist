@@ -52,6 +52,9 @@ or
 # Changelog
 
 + 0.1.0 --> **master branch**
+    + Open option will not wait for browser to close after opening the html
+      on non-windows platforms if the open option was invoked when the
+      default browser was not open already
     + Fixed channel name printing on console containing html entities
     + Added option to fetch updates from specific channel at a time
     + Fixed description text not being displayed properly on special characters
