@@ -1184,12 +1184,16 @@ function insert_a_subscription(ch_id, ch_name)
                 if(result && result.errno)
                 {
                     if(result.errno == 19)
-    console.info(`Already subscribed. Skipping: '${ch_name}' (${ch_id})`);
+    console.info(`Already subscribed. Skipping: '${entities.decodeHTML
+                                                    (validator.unescape
+                                                        (ch_name))}' (${ch_id})`);
                     else
     console.info(result);
                 }
                 else if(result === null)
-    console.info(`You are now subscribed to '${ch_name}' (${ch_id})`);
+    console.info(`You are now subscribed to '${entities.decodeHTML
+                                                (validator.unescape
+                                                    (ch_name))}' (${ch_id})`);
                 else
     console.error('=> Error', result);
                 resolve();
