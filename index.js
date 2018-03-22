@@ -299,7 +299,9 @@ function insert_for_subscribe(ch_id, ch_name)
                 {
                     if(result.errno == 19)
                         console.info(
-                            `You were already subscribed to '${ch_name}' (${ch_id})`);
+                            `You were already subscribed to '${entities.decodeHTML
+                                (validator.unescape
+                                    (ch_name))}' (${ch_id})`);
                     else
                     {
                         reject(result);
@@ -307,7 +309,9 @@ function insert_for_subscribe(ch_id, ch_name)
                 }
                 else if(result === null)
                 {
-                    console.info(`Subscribed to '${ch_name}' (${ch_id})`);
+                    console.info(`Subscribed to '${entities.decodeHTML
+                        (validator.unescape
+                            (ch_name))}' (${ch_id})`);
                     resolve();
                 }
                 else
@@ -401,7 +405,10 @@ function list_subscriptions(names_only)
                         console.info
                         (
                             String(rows[i].channel_id_id) + '.',
-                            validator.unescape(rows[i].channel_name)
+                            entities.decodeHTML
+                            (
+                                validator.unescape(rows[i].channel_name)
+                            )
                         );
                     }
                 }
@@ -412,7 +419,10 @@ function list_subscriptions(names_only)
                         console.info
                         (
                             rows[i].channel_id,
-                            validator.unescape(rows[i].channel_name)
+                            entities.decodeHTML
+                            (
+                                validator.unescape(rows[i].channel_name)
+                            )
                         );
                     }
                 }

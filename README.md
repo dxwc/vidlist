@@ -52,6 +52,7 @@ or
 # Changelog
 
 + 0.1.0 --> **master branch**
+    + Fixed channel name printing on console containing html entities
     + Added option to fetch updates from specific channel at a time
     + Fixed description text not being displayed properly on special characters
     + Fixed a minor wrongly ordered set of operations during subscribing
