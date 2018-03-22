@@ -608,7 +608,7 @@ function download_and_save_feed()
     {
         db.all
         (
-            ` SELECT channel_id_id, channel_id FROM subscriptions`,
+            `SELECT channel_id_id, channel_id FROM subscriptions`,
             (err, rows) =>
             {
                 if(err) reject(err);
@@ -692,6 +692,71 @@ function download_and_save_feed()
                 }
             }
         );
+    });
+}
+
+/**
+ * Upadate videos data by parsing and processing chosen channel's rss feed
+ * @returns {Promise} Resolves when update completes
+*/
+function download_and_save_one_feed(num)
+{
+    return Promise.resolve()
+    .then(() =>
+    {
+        if(typeof num === 'string' && validator.isInt(num)) return Number(num);
+        return list_subscriptions(true)
+        .then(() =>
+        {
+            return new Promise((resolve, reject) =>
+            {
+                require('readline').createInterface
+                ({
+                    input: process.stdin,
+                    output: process.stdout
+                })
+                .question('Enter the channel number you wish to update: ', (answer) =>
+                {
+                    if(validator.isInt(answer)) return resolve(Number(answer));
+                    else return reject('Invalid answer, must be one of the number shown');
+                });
+            })
+        });
+    })
+    .then((channel_number) =>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            db.all
+            (
+                `
+                SELECT
+                    channel_id_id,
+                    channel_id
+                FROM
+                    subscriptions
+                WHERE
+                    channel_id_id=${channel_number}`,
+                (err, rows) =>
+                {
+                    if(err) return reject(err);
+                    else
+                    {
+                        if(global.prog)
+                        process.stdout.write('Initiating downloader and processor\r');
+
+                        if(rows.length)
+                            process_one(rows[0].channel_id_id, rows[0].channel_id)
+                            .then(() =>
+                            {
+                                return resolve();
+                            });
+                        else
+                    return reject('No channel found associated with given number');
+                    }
+                }
+            );
+        });
     });
 }
 
@@ -1174,6 +1239,8 @@ let getopt = new Getopt
 ([
   ['s', 'subscribe=ARG', 'Subscribe with a video/channel url'],
   ['u', 'update', 'Fetch new updates from channels'],
+  ['n', 'onei', 'Interactively select and update a channel'],
+  ['', 'one=ARG', 'Update a specific known channel'],
   ['g', 'generate', 'Generate yt_view_subscriptions.html'],
   ['o', 'open', 'Open generated html file in default browser'],
   ['l', 'list', 'Print a list of your subscrbed channels'],
@@ -1249,6 +1316,16 @@ vl --list
 and open the HTML with your default browser:
 
 vl -upgo
+
+> update ONLY a specific channel interactively, show progress, generate
+html and then open the HTML with your default browser:
+
+vl -npgo
+
+> update particular known selection of channel (eg: channel 3) show
+progress, generate html and then open the HTML with your default browser
+
+vl --one 3 -pgo
 `
 )
 .error(() =>
@@ -1286,16 +1363,27 @@ open_db_global()
         return remove_subscription();
     else if(opt.options.subscribe)
         return subscribe(opt.options.subscribe);
-    else if(opt.options.update || opt.options.generate || opt.options.open)
+    else if(opt.options.update)
+        return download_and_save_feed()
+        .then(() =>
+        {
+            if(global.prog)
+            process.stdout.write(': Removing any older [see -h] data from db\r');
+        })
+        .then(() => keep_db_shorter());
+    else if(opt.options.onei)
+        return download_and_save_one_feed().then(() => keep_db_shorter());
+    else if(opt.options.one)
     {
-        if(opt.options.update)
-            return download_and_save_feed()
-            .then(() =>
-            {
-                if(global.prog)
-                process.stdout.write(': Removing any older [see -h] data from db\r');
-            })
-            .then(() => keep_db_shorter());
+        if(typeof opt.options.one === 'string' && validator.isInt(opt.options.one))
+            return download_and_save_one_feed(opt.options.one)
+                   .then(() => keep_db_shorter());
+        else
+            throw new Error('Argument to --one is not an integer');
+    }
+    else if(opt.options.generate || opt.options.open)
+    {
+        return true;
     }
     else if(validator.isURL(process.argv[2]))
     {
@@ -1310,7 +1398,13 @@ open_db_global()
 })
 .then(() =>
 {
-    if
+    if(opt.options.update || opt.options.onei || opt.options.one)
+    {
+        if(global.prog)
+        process.stdout.write(`                                                 \r`);
+        console.info('--Fetched updates');
+    }
+    else if
     (
         opt.options.list ||
         opt.options.subscribe ||
@@ -1320,12 +1414,6 @@ open_db_global()
     )
     {
         return close_everything(0);
-    }
-    else if(opt.options.update)
-    {
-        if(global.prog)
-        process.stdout.write(`                                                 \r`);
-        console.info('--Fetched updates');
     }
 
     if(opt.options.generate) return generate_html();
