@@ -746,7 +746,8 @@ function download_and_save_one_feed(num)
                 .question('Enter the channel number you wish to update: ', (answer) =>
                 {
                     if(validator.isInt(answer)) return resolve(Number(answer));
-                    else return reject('Invalid answer, must be one of the number shown');
+                    else return reject
+                    ('Invalid answer, must be one of the number shown');
                 });
             })
         });
@@ -780,7 +781,14 @@ function download_and_save_one_feed(num)
                                 return resolve();
                             });
                         else
-                    return reject('No channel found associated with given number');
+                        {
+                            console.error
+                            (
+                '=> No channel found associated with given number, SKIPPING',
+                channel_number
+                            );
+                            return resolve();
+                        }
                     }
                 }
             );
@@ -1354,10 +1362,11 @@ html and then open the HTML with your default browser:
 
 vl -npgo
 
-> update particular known selection of channel (eg: channel 3) show
-progress, generate html and then open the HTML with your default browser
+> update particular known selection or selections of channel
+(eg: channel 3,4,5) show progress, generate html and then
+open the HTML with your default browser
 
-vl --one 3 -pgo
+vl --one 3,4,5 -pgo
 `
 )
 .error(() =>
@@ -1410,11 +1419,42 @@ open_db_global()
         return download_and_save_one_feed().then(() => keep_db_shorter());
     else if(opt.options.one)
     {
-        if(typeof opt.options.one === 'string' && validator.isInt(opt.options.one))
-            return download_and_save_one_feed(opt.options.one)
+        if(typeof opt.options.one === 'string')
+        {
+
+            if(validator.isInt(opt.options.one))
+                return download_and_save_one_feed(opt.options.one)
                    .then(() => keep_db_shorter());
-        else
-            throw new Error('Argument to --one is not an integer');
+            else
+            {
+                let arr = opt.options.one.split(',');
+                let promise_chain = Promise.resolve();
+                let counter = 0;
+                arr.forEach((val) =>
+                {
+                    if(typeof val === 'string' && validator.isInt(val))
+                    {
+                        ++counter;
+                        promise_chain = promise_chain.then(() =>
+                        {
+process.stdout.write('                                   \r');
+process.stdout.write(`: Fetching update channel #${val}\r`);
+                            return download_and_save_one_feed(val);
+                        });
+                    }
+                    else
+                    {
+                        console.error('=> Skipping update for invalid input:', val);
+                    }
+                });
+
+                if(counter === 0) return Promise
+                .reject('No updates were performed due to invalid input/s');
+
+                return promise_chain.then(() => keep_db_shorter());
+            }
+        }
+        else throw new Error('Argument to --one is not an integer');
     }
     else if(opt.options.generate || opt.options.open)
     {
@@ -1437,6 +1477,8 @@ open_db_global()
     {
         if(global.prog)
         process.stdout.write(`                                                 \r`);
+        if(opt.options.one)
+        process.stdout.write('                                   \r');
         console.info('--Fetched updates');
     }
     else if

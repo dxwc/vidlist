@@ -57,7 +57,7 @@ or
       on non-windows platforms if the open option was invoked when the
       default browser was not open already
     + Fixed channel name printing on console containing html entities
-    + Added option to fetch updates from specific channel at a time
+    + Added option to fetch updates from specific channel/s at a time
     + Fixed description text not being displayed properly on special characters
     + Fixed a minor wrongly ordered set of operations during subscribing
 + 0.0.9 --> **NPM current**
