@@ -51,7 +51,7 @@ or
 
 # Changelog
 
-+ 0.1.0 --> **master branch**
++ 0.1.0
     + Print status text on individual subscription
     + Open option will not wait for browser to close after opening the html
       on non-windows platforms if the open option was invoked when the
@@ -60,7 +60,7 @@ or
     + Added option to fetch updates from specific channel/s at a time
     + Fixed description text not being displayed properly on special characters
     + Fixed a minor wrongly ordered set of operations during subscribing
-+ 0.0.9 --> **NPM current**
++ 0.0.9
     + Fixed html not opening in windows issue
 + 0.0.8
     + CSS changed

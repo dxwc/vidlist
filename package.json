@@ -1,7 +1,13 @@
 {
   "name": "vidlist",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "A command line tool to subscribe to youtube channels and view updates in a locally generated html file",
+  "keywords": [
+      "youtube",
+      "subscribe",
+      "subscriber",
+      "subscription"
+  ],
   "main": "index.js",
   "bin": {
     "vidlist": "index.js",
