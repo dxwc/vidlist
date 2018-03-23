@@ -1345,7 +1345,7 @@ Usages:
 
 NOTE:
 
-1. Progress option works with update only
+1. Progress option works with update options only
 2. Options to update, generate and open can be combined. For
    all other options, combining will produce unexpeted results
 3. Program file is in directory:
