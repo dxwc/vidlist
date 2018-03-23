@@ -650,7 +650,48 @@ function download_and_save_feed()
 
                     for(let i = 0; i < rows.length; ++i)
                     {
-                        if(i + 3 < rows.length)
+                        if(i + 5 < rows.length)
+                        {
+                            let k = i;
+                            all_downloads = all_downloads
+                            .then(() =>
+                            {
+                                return Promise.all
+                                (
+                                    [
+                        process_one(rows[k+5].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+4].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
+                        process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
+                        process_one(rows[k].channel_id_id, rows[k].channel_id)
+                                    ]
+                                );
+                            });
+
+                            i += 5;
+                        }
+                        else if(i + 4 < rows.length)
+                        {
+                            let k = i;
+                            all_downloads = all_downloads
+                            .then(() =>
+                            {
+                                return Promise.all
+                                (
+                                    [
+                        process_one(rows[k+4].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
+                        process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
+                        process_one(rows[k].channel_id_id, rows[k].channel_id)
+                                    ]
+                                );
+                            });
+
+                            i += 4;
+                        }
+                        else if(i + 3 < rows.length)
                         {
                             let k = i;
                             all_downloads = all_downloads
