@@ -31,6 +31,14 @@ or
 
 `vl -upgo`
 
+**Generated HTML use**
+
++ Clicking on thumbnail takes to full width video embed link
++ Clicking on video title takes to normal youtube video view link
++ Hovering over channel name shows time since video published
++ Hovering over video title shows video description text
++ Channel list and links will be on the bottom of the page
+
 **Want to start with my recommended list of channels ?**
 
 1. Save [this file](https://raw.githubusercontent.com/dxwc/subscribe/files/subscriptions.json) somewhere on your computer.
@@ -45,7 +53,6 @@ or
 + Generated HTML file contains no javascript
 + Basic validation and XSS protection are in place
 + It is easy to see where in the `index.js` to edit to change CSS to one's liking
-+ Channel name infomration per video, title hover shows video description
 + Can easily add or remove channels from subscriptions
 + Can easily import or export subscription list as text (JSON) file
 
@@ -78,7 +85,7 @@ or
 
 # Dependency Overview
 
-NOTE: Nothing needs to be install seperately, the instruction in
+NOTE: Nothing needs to be install separately, the instruction in
 *setup* section above is all you need to install and use vidlist.
 
 [vidlist](https://www.npmjs.com/package/vidlist) requires:
