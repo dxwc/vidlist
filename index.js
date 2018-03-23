@@ -1457,7 +1457,10 @@ open_db_global()
         })
         .then(() => keep_db_shorter());
     else if(opt.options.onei)
+    {
+        global.remaining = 1;
         return download_and_save_one_feed().then(() => keep_db_shorter());
+    }
     else if(opt.options.one)
     {
         if(typeof opt.options.one === 'string')
