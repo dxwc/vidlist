@@ -51,6 +51,8 @@ or
 
 # Changelog
 
++ 0.1.1
+    + --one multiple update status counter fix with -p
 + 0.1.0
     + Print status text on individual subscription
     + Open option will not wait for browser to close after opening the html

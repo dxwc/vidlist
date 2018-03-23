@@ -1426,7 +1426,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 0.1.0');
+    console.info('vidlist 0.1.1');
     process.exit(0);
 }
 
@@ -1470,12 +1470,12 @@ open_db_global()
             {
                 let arr = opt.options.one.split(',');
                 let promise_chain = Promise.resolve();
-                let counter = 0;
+                global.remaining = 0;
                 arr.forEach((val) =>
                 {
                     if(typeof val === 'string' && validator.isInt(val))
                     {
-                        ++counter;
+                        ++global.remaining;
                         promise_chain = promise_chain.then(() =>
                         {
 process.stdout.write('                                   \r');
@@ -1489,7 +1489,7 @@ process.stdout.write(`: Fetching update channel #${val}\r`);
                     }
                 });
 
-                if(counter === 0) return Promise
+                if(global.remaining === 0) return Promise
                 .reject('No updates were performed due to invalid input/s');
 
                 return promise_chain.then(() => keep_db_shorter());
