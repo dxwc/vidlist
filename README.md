@@ -58,6 +58,8 @@ or
 
 # Changelog
 
++ 0.1.2
+    + Fix bug that was causing channel name mismatch since 0.1.0
 + 0.1.1
     + --one multiple update status counter fix with -p
 + 0.1.0

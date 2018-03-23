@@ -659,8 +659,8 @@ function download_and_save_feed()
                                 return Promise.all
                                 (
                                     [
-                        process_one(rows[k+5].channel_id_id, rows[k+3].channel_id),
-                        process_one(rows[k+4].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+5].channel_id_id, rows[k+5].channel_id),
+                        process_one(rows[k+4].channel_id_id, rows[k+4].channel_id),
                         process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
                         process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
                         process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
@@ -680,7 +680,7 @@ function download_and_save_feed()
                                 return Promise.all
                                 (
                                     [
-                        process_one(rows[k+4].channel_id_id, rows[k+3].channel_id),
+                        process_one(rows[k+4].channel_id_id, rows[k+4].channel_id),
                         process_one(rows[k+3].channel_id_id, rows[k+3].channel_id),
                         process_one(rows[k+2].channel_id_id, rows[k+2].channel_id),
                         process_one(rows[k+1].channel_id_id, rows[k+1].channel_id),
@@ -730,9 +730,6 @@ function download_and_save_feed()
                         }
                         else if(i + 1 < rows.length)
                         {
-                            // by the time i is used bellow, program moved past
-                            // this block to the i+=1, having a temp k seems to work
-                            // TODO: find out why exactly
                             let k = i;
                             all_downloads = all_downloads
                             .then(() =>
