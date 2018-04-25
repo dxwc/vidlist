@@ -90,7 +90,7 @@ or
 
 # Dependency Overview
 
-NOTE: Nothing needs to be install separately, the instruction in
+NOTE: Nothing needs to be installed separately, the instruction in
 *setup* section above is all you need to install and use vidlist.
 
 [vidlist](https://www.npmjs.com/package/vidlist) requires:
