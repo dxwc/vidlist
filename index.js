@@ -49,6 +49,29 @@ catch(err)
     }
 }
 
+global.previous_length = 0;
+
+function stdout_write(text)
+{
+    process.stdout.write
+    (
+        ' '.repeat(global.previous_length ? previous_length : text.length) + '\r'
+    );
+
+    global.previous_length = text.length;
+    process.stdout.write(text + '\r');
+}
+
+function clean_say_dont_replace(text)
+{
+    process.stdout.write
+    (
+        ' '.repeat(global.previous_length ? previous_length : text.length) + '\r'
+    );
+
+    console.info(text);
+}
+
 /**
  * Asynchronously downloads content given https link
  * @param {String} link Full https youtube url
@@ -295,8 +318,6 @@ function insert_for_subscribe(ch_id, ch_name)
             `,
             (result) =>
             {
-                if(global.is_import === undefined)
-                process.stdout.write('                                     \r');
                 if(result && result.errno)
                 {
                     if(result.errno == 19)
@@ -344,15 +365,14 @@ function subscribe(youtube_url)
     .then(() =>
     {
         if(global.is_import === undefined)
-            process.stdout.write(': Fetching a page to extract data...\r');
+            stdout_write(`: Fetching a page to extract data...`);
         return download_page(youtube_url);
     })
     .then((page) =>
     {
         if(global.is_import === undefined)
         {
-            process.stdout.write('                                      \r');
-            process.stdout.write(': Extracting information...\r');
+            stdout_write(`: Extracting information...`);
         }
         ch_id = parse_channel_id(page);
         return parse_channel_name(ch_id);
@@ -361,8 +381,7 @@ function subscribe(youtube_url)
     {
         if(global.is_import === undefined)
         {
-            process.stdout.write('                                      \r');
-            process.stdout.write(': Saving extracted data to database...\r');
+            stdout_write(`: Saving extracted data to database...`)
         }
         ch_name = validator.escape(name);
         return insert_for_subscribe(ch_id, ch_name);
@@ -605,8 +624,11 @@ function process_one(channel_id_id, channel_id)
     .then(() =>
     {
         if(global.prog)
-            process.stdout.write
-            (`: ${global.remaining} channel's download and processing remaining\r`);
+        stdout_write
+        (
+            `: ${global.remaining} channel's download and processing remaining`
+        );
+
         return true;
     })
     .then(() =>
@@ -643,7 +665,7 @@ function download_and_save_feed()
                 else
                 {
                     if(global.prog)
-                        process.stdout.write('Initiating downloader and processor\r');
+                        stdout_write(`Initiating downloader and processor`);
 
                     let all_downloads = Promise.resolve();
                     global.remaining = rows.length;
@@ -810,7 +832,7 @@ function download_and_save_one_feed(num)
                     else
                     {
                         if(global.prog)
-                        process.stdout.write('Initiating downloader and processor\r');
+                            stdout_write(`Initiating downloader and processor`);
 
                         if(rows.length)
                             process_one(rows[0].channel_id_id, rows[0].channel_id)
@@ -1450,7 +1472,7 @@ open_db_global()
         .then(() =>
         {
             if(global.prog)
-            process.stdout.write(': Removing any older [see -h] data from db\r');
+            stdout_write(`: Removing any older [see -h] data from db`);
         })
         .then(() => keep_db_shorter());
     else if(opt.options.onei)
@@ -1478,8 +1500,7 @@ open_db_global()
                         ++global.remaining;
                         promise_chain = promise_chain.then(() =>
                         {
-process.stdout.write('                                   \r');
-process.stdout.write(`: Fetching update channel #${val}\r`);
+                            stdout_write(`: Fetching update channel #${val}`);
                             return download_and_save_one_feed(val);
                         });
                     }
@@ -1516,11 +1537,7 @@ process.stdout.write(`: Fetching update channel #${val}\r`);
 {
     if(opt.options.update || opt.options.onei || opt.options.one)
     {
-        if(global.prog)
-        process.stdout.write(`                                                 \r`);
-        if(opt.options.one)
-        process.stdout.write('                                   \r');
-        console.info('--Fetched updates');
+        clean_say_dont_replace(`--Fetched updates`);
     }
     else if
     (
@@ -1539,7 +1556,10 @@ process.stdout.write(`: Fetching update channel #${val}\r`);
 })
 .then(() =>
 {
-    if(opt.options.generate) console.info('--Generated HTML');
+    if(opt.options.generate)
+    {
+        clean_say_dont_replace(`--Generated HTML`);
+    }
     if(opt.options.open)
     {
         if(require('os').platform() === 'win32') return opn(global.html);
@@ -1554,7 +1574,10 @@ process.stdout.write(`: Fetching update channel #${val}\r`);
 {
     if(opt.options.open)
     {
-        console.info('--Asked OS to open HTML with your default web browser');
+        clean_say_dont_replace
+        (
+            `--Asked OS to open HTML with your default web browser`
+        );
     }
     close_everything(0);
 })
