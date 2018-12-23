@@ -170,7 +170,7 @@ function parse_channel_name(channel_id)
     {
         if(typeof(channel_id) != 'string' || channel_id.length != 24)
         {
-            reject('Invalid youtube channel ID');
+            return reject('Invalid youtube channel ID');
         }
 
         download_page('https://www.youtube.com/channel/'+channel_id)
@@ -184,7 +184,7 @@ function parse_channel_name(channel_id)
                 id_string_found_post !== -1 &&
                 id_string_found_pre + 11 < id_string_found_post)
             {
-                resolve
+                return resolve
                 (
                     page.substring
                     (
@@ -195,7 +195,7 @@ function parse_channel_name(channel_id)
             }
             else
             {
-                reject('Parseable string not found in page')
+                return reject('Parseable string not found in page')
             }
         });
     });
@@ -213,11 +213,10 @@ function sql_promise(command)
         db.run
         (
             command,
-            (result, err) =>
+            (err) =>
             {
-                if(result && result.errno) reject(result);
-                else if(err) reject(err);
-                else resolve();
+                if(err) return reject(err);
+                else    return resolve();
             }
         );
     });
@@ -236,7 +235,7 @@ function open_db_global()
             path.join(global.dot, 'subscription_data.db'),
             (err) =>
             {
-                if(err) reject(err);
+                if(err) return reject(err);
                 sql_promise
                 (
                     `
@@ -287,11 +286,11 @@ function open_db_global()
                 })
                 .then(() =>
                 {
-                    resolve();
+                    return resolve();
                 })
                 .catch((err) =>
                 {
-                    reject(err);
+                    return reject(err);
                 })
             }
         );
@@ -327,7 +326,7 @@ function insert_for_subscribe(ch_id, ch_name)
                                     (ch_name))}' (${ch_id})`);
                     else
                     {
-                        reject(result);
+                        return reject(result);
                     }
                 }
                 else if(result === null)
@@ -335,11 +334,11 @@ function insert_for_subscribe(ch_id, ch_name)
                     console.info(`Subscribed to '${entities.decodeHTML
                         (validator.unescape
                             (ch_name))}' (${ch_id})`);
-                    resolve();
+                    return resolve();
                 }
                 else
                 {
-                    reject('Undefined error');
+                    return reject('Undefined error');
                 }
             }
         );
@@ -411,8 +410,8 @@ function keep_db_shorter()
                     (new Date().getTime()/1000) - global.old_video_limit_sec}`,
             (err) =>
             {
-                if(err) reject(err);
-                else resolve();
+                if(err) return reject(err);
+                else return resolve();
             }
         );
     });
@@ -433,7 +432,7 @@ function list_subscriptions(names_only)
             `,
             (err, rows) =>
             {
-                if(err) reject(err);
+                if(err) return reject(err);
                 if(names_only)
                 {
 
@@ -463,7 +462,7 @@ function list_subscriptions(names_only)
                         );
                     }
                 }
-                resolve();
+                return resolve();
             }
         );
     });
@@ -564,7 +563,7 @@ function parse_and_save_data(page, ch_id_id)
                 v_description_post === -1
             )
             {
-                reject('tagname/s under entry not found');
+                return reject('tagname/s under entry not found');
                 break;
             }
 
@@ -661,7 +660,7 @@ function download_and_save_feed()
             `SELECT channel_id_id, channel_id FROM subscriptions`,
             (err, rows) =>
             {
-                if(err) reject(err);
+                if(err) return reject(err);
                 else
                 {
                     if(global.prog)
@@ -1133,7 +1132,7 @@ function remove_subscription()
                 if(validator.isInt(answer))
                 {
                     channel_number = Number(answer);
-                    resolve
+                    return resolve
                     (
                         sql_promise
                         (
@@ -1163,7 +1162,7 @@ function remove_subscription()
                         })
                     );
                 }
-                else reject('Invalid input, not an integer');
+                else return reject('Invalid input, not an integer');
             });
         });
     });
@@ -1181,7 +1180,7 @@ function close_everything(code)
         db.close((err) =>
         {
             if(err) { console.error('=> Error:\n', err); process.exit(1) }
-            else resolve();
+            else return resolve();
         });
     })
     .then(() =>
@@ -1203,7 +1202,7 @@ function export_subscription_list()
             `SELECT * FROM subscriptions`,
             (err, rows) =>
             {
-                if(err) reject(err);
+                if(err) return reject(err);
 
 
                 let subs = [];
@@ -1224,7 +1223,7 @@ function export_subscription_list()
 
                 console.info(`--Exported ${export_file}`);
 
-                resolve();
+                return resolve();
             }
         );
     });
@@ -1264,7 +1263,7 @@ function insert_a_subscription(ch_id, ch_name)
                                                     (ch_name))}' (${ch_id})`);
                 else
     console.error('=> Error', result);
-                resolve();
+                return resolve();
             }
         );
     });
