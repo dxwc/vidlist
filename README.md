@@ -56,6 +56,9 @@ or
 
 # Changelog
 
++ 1.0.1
+    + Dependency package versions updated
+    + Progress text change bug fixed
 + 1.0.0
     + Identical to previous version 0.1.2, now following npm semantic
       versioning

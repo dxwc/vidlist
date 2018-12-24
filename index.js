@@ -1444,7 +1444,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 1.0.0');
+    console.info('vidlist 1.0.1');
     process.exit(0);
 }
 
