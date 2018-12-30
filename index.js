@@ -14,16 +14,19 @@ const xss       = require('xss-filters');
 
 global.old_video_limit_sec = 15*24*60*60; // 15 days
 
-global.dot = path.join(require('os').homedir(), '.vidlist');
+global.dot  = path.join(require('os').homedir(), '.vidlist');
 global.html = path.join(require('os').tmpdir() , 'view_subscriptions.html');
 
 try
 {
     if(!fs.statSync(global.dot).isDirectory())
     {
-        console.error(`=> Error:\nCan not create a directory as there is an \
-existing file with the same name ( ${global.dot} ). \
-Remove/rename the file and then re-run to continue`);
+        console.error
+        (
+            `=> Error:\nCan not create a directory as there is an ` +
+            `existing file with the same name ( ${global.dot} ). `  +
+            `Remove/rename the file and then re-run to continue`
+        );
         process.exit(1);
     }
 }
@@ -613,7 +616,7 @@ function parse_and_save_data(page, ch_id_id)
 global.remaining = 0;
 
 /**
- * Downloads content of a channel's rss feed and pass data to parse_and_save_data(...)
+ * Downloads content of a channel's rss feed and pass data to parse_and_save_data()
  * @param {Number} channel_id_id The database PK from db of the channel to process
  * @param {String} channel_id The channel ID
  */
@@ -758,8 +761,16 @@ function download_and_save_feed()
                                 return Promise.all
                                 (
                                     [
-                            process_one(rows[k].channel_id_id, rows[k].channel_id),
-                            process_one(rows[k+1].channel_id_id, rows[k+1].channel_id)
+                                        process_one
+                                        (
+                                            rows[k].channel_id_id,
+                                            rows[k].channel_id
+                                        ),
+                                        process_one
+                                        (
+                                            rows[k+1].channel_id_id,
+                                            rows[k+1].channel_id
+                                        )
                                     ]
                                 );
                             });
@@ -771,7 +782,11 @@ function download_and_save_feed()
                             all_downloads = all_downloads
                             .then(() =>
                             {
-                    return process_one(rows[i].channel_id_id, rows[i].channel_id);
+                                return process_one
+                                (
+                                    rows[i].channel_id_id,
+                                    rows[i].channel_id
+                                );
                             });
                         }
                     }
@@ -802,12 +817,16 @@ function download_and_save_one_feed(num)
                     input: process.stdin,
                     output: process.stdout
                 })
-                .question('Enter the channel number you wish to update: ', (answer) =>
-                {
-                    if(validator.isInt(answer)) return resolve(Number(answer));
-                    else return reject
-                    ('Invalid answer, must be one of the number shown');
-                });
+                .question
+                (
+                    'Enter the channel number you wish to update: ',
+                    (answer) =>
+                    {
+                        if(validator.isInt(answer)) return resolve(Number(answer));
+                        else return reject
+                        ('Invalid answer, must be one of the number shown');
+                    }
+                );
             })
         });
     })
@@ -843,8 +862,9 @@ function download_and_save_one_feed(num)
                         {
                             console.error
                             (
-                '=> No channel found associated with given number, SKIPPING',
-                channel_number
+                                '=> No channel found associated with given number,' +
+                                ' SKIPPING',
+                                channel_number
                             );
                             return resolve();
                         }
@@ -1210,7 +1230,10 @@ function export_subscription_list()
                 {
                     subs.push
                     (
-                        [rows[i].channel_id, validator.unescape(rows[i].channel_name)]
+                        [
+                            rows[i].channel_id,
+                            validator.unescape(rows[i].channel_name)
+                        ]
                     );
                 }
 
