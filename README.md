@@ -2,15 +2,25 @@ A simple command line program to subscribe to youtube channels and
 view thumbnail links of videos in a locally generated html page. No
 youtube/google account needed.
 
-# Setup
+<p align='center'>
+    <img src='https://img.shields.io/david/dxwc/vidlist.svg?style=for-the-badge'>
+    <img src='https://img.shields.io/npm/dt/vidlist.svg?style=for-the-badge'>
+    <img src='https://img.shields.io/npm/v/vidlist.svg?style=for-the-badge'>
+</p>
+
+<p align='center'>
+    <img width='501px' src='https://raw.githubusercontent.com/dxwc/vidlist/files/vidlist.png'>
+</p>
+
+# Install
 
 1. Have [Node.js](https://nodejs.org/en/) installed (any version
    higher than 6 should be fine)
-2. Run command `npm install -g vidlist` and you are all set
-    + To update to latest version anytime after installation, re-run above command
+2. Run command **`npm install -g vidlist`** and you are all set
+    + To update run `npm update -g vidlist`
     + To uninstall, run `npm uninstall -g vidlist`
     + _Unix may need `sudo` before commands_
-    + _Windows may need running cmd as admistrator_
+    + _Windows may need running as admistrator_
 
 # Use
 
