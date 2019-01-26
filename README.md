@@ -16,7 +16,7 @@ youtube/google account needed.
 
 1. Have [Node.js](https://nodejs.org/en/) installed (any version
    higher than 6 should be fine)
-2. Run command **`npm install -g vidlist`** and you are all set
+2. Run command **`npm install -g vidlist@latest`** and you are all set
     + To update run `npm update -g vidlist`
     + To uninstall, run `npm uninstall -g vidlist`
     + _Unix may need `sudo` before commands_
