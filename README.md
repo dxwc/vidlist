@@ -66,6 +66,9 @@ or
 
 # Changelog
 
++ 1.0.2
+    + YouTube watch/user/channel/embed/shortcut URL are all correctly supported for
+     subscribing
 + 1.0.1
     + Dependency package versions updated
     + Progress text change bug fixed

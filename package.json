@@ -34,6 +34,7 @@
     "opn": "^5.4.0",
     "sqlite3": "^4.0.4",
     "validator": "^10.9.0",
+    "vid_data": "^0.3.0",
     "xss-filters": "^1.2.7"
   }
 }

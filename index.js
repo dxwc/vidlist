@@ -11,6 +11,7 @@ const entities  = require('entities');
 const validator = require('validator');
 const Getopt    = require('node-getopt');
 const xss       = require('xss-filters');
+const vd        = require('vid_data');
 
 global.old_video_limit_sec = 15*24*60*60; // 15 days
 
@@ -85,122 +86,13 @@ function download_page(link)
     return new Promise((resolve, reject) =>
     {
         let data = '';
-        https.get
-        (
-            link,
-            (res) =>
-            {
-                res.on('data', (chunk) => data += chunk);
-                res.on('end', () => resolve(data));
-                res.on('error', (err) => reject(err));
-            }
-        )
+        https.get(link, (res) =>
+        {
+            res.on('data',  (chunk) => data += chunk);
+            res.on('end',   ()      => resolve(data));
+            res.on('error', (err)   => reject(err));
+        })
         .on('error', (err) => reject(err));
-    });
-}
-
-/**
- * Regex check to see is valid watch, channel, user or a shortend yt url
- * @param {String} url Full https youtube url
- * @returns {Boolean}
- */
-function is_valid_yt_url(url)
-{
-    try
-    {
-        if
-        (
-            url.match(/https:\/\/www.youtube.com\/watch\?v=.+/) !== null ||
-            url.match(/https:\/\/www.youtube.com\/channel\/.+/) !== null ||
-            url.match(/https:\/\/www.youtube.com\/user\/.+/)    !== null ||
-            url.match(/https:\/\/youtu.be\/...........+/)       !== null
-        )
-        {
-            return true;
-        }
-    }
-    catch(err)
-    {
-        console.error('Error', err);
-    }
-
-    return false;
-}
-
-/**
- * Find and validate data-channel-external-id
- * @param {String} html_page Content of the downloaded page
- * @returns {(String|Null)} ID or null
- */
-function parse_channel_id(html_page)
-{
-    let id_string_found = html_page.search('data-channel-external-id=\"');
-
-    if(id_string_found !== -1)
-    {
-        let ch_id = html_page.substring(id_string_found+26, id_string_found+26+24);
-        if
-        (
-            !validator.isWhitelisted
-            (
-                ch_id.toLowerCase(),
-                'abcdefghijklmnopqrstuvwxyz0123456789-_'
-            )
-        )
-        {
-            console.error('Extracted channel id contains invalid charactes.');
-            return null;
-        }
-        else
-        {
-            return ch_id;
-        }
-    }
-    else
-    {
-        return null;
-    }
-}
-
-/**
- * Use a channle ID to download content of a channel page to extract channel name
- * @param {String} channel_id A valid youtube channel ID
- * @returns {Promise<String>} Resolve with channel name, reject with error info
- */
-function parse_channel_name(channel_id)
-{
-    return new Promise((resolve, reject) =>
-    {
-        if(typeof(channel_id) != 'string' || channel_id.length != 24)
-        {
-            return reject('Invalid youtube channel ID');
-        }
-
-        download_page('https://www.youtube.com/channel/'+channel_id)
-        .then((page) =>
-        {
-            let id_string_found_pre = page.search('<title>  ');
-            let id_string_found_post = page.search('</title>');
-
-            if(
-                id_string_found_pre !== -1 &&
-                id_string_found_post !== -1 &&
-                id_string_found_pre + 11 < id_string_found_post)
-            {
-                return resolve
-                (
-                    page.substring
-                    (
-                        id_string_found_pre+9,
-                        id_string_found_post-11
-                    )
-                );
-            }
-            else
-            {
-                return reject('Parseable string not found in page')
-            }
-        });
     });
 }
 
@@ -351,46 +243,27 @@ function insert_for_subscribe(ch_id, ch_name)
 /**
  * Verify url, download content, parse channel ID and name and then insert an entry
  * to subscriptions table of sqlite3 db
- * @param {String} youtube_url A acceptable youtube url
+ * @param {String} url A acceptable youtube url
  */
-function subscribe(youtube_url)
+function subscribe(url)
 {
-    if(typeof(youtube_url) !== 'string' || !is_valid_yt_url(youtube_url))
-        return console.error('Not a valid youtube URL');
-    else if(typeof(db) === undefined)
-        return console.error(`Database has not been opened`);
+    stdout_write(': Attempting to get channel data...');
 
-    let ch_id = undefined;
-    let ch_name = undefined;
-
-    return Promise.resolve()
-    .then(() =>
+    return vd.get_channel_id_and_name(url)
+    .then((res) =>
     {
-        if(global.is_import === undefined)
-            stdout_write(`: Fetching a page to extract data...`);
-        return download_page(youtube_url);
-    })
-    .then((page) =>
-    {
-        if(global.is_import === undefined)
-        {
-            stdout_write(`: Extracting information...`);
-        }
-        ch_id = parse_channel_id(page);
-        return parse_channel_name(ch_id);
-    })
-    .then((name) =>
-    {
-        if(global.is_import === undefined)
-        {
-            stdout_write(`: Saving extracted data to database...`)
-        }
-        ch_name = validator.escape(name);
-        return insert_for_subscribe(ch_id, ch_name);
+        // console.log(res, res=== null);
+        if(res === null || !res.channel_id || !res.channel_name)
+            return clean_say_dont_replace
+            ('Failed. Ensure URL is valid, else file a bug report');
+        else
+            stdout_write(': Data extraction successful. Saving locally...');
+        res.channel_name = validator.escape(res.channel_name);
+        return insert_a_subscription(res.channel_id, res.channel_name);
     })
     .catch((err) =>
     {
-        console.error('Error:\n', err);
+        clean_say_dont_replace('Error:\n' + String(err));
     });
 }
 
@@ -495,20 +368,10 @@ function insert_entries(values)
             VALUES
             ${values}
             `,
-            (result, err) =>
+            (err) =>
             {
-                if
-                (
-                    result && typeof(result.errno) === 'number' &&
-                    result.errno !== 19
-                )
-                {
-                    return reject(result);
-                }
-                else
-                {
-                    return resolve();
-                }
+                if(err && err.errno !== 19) return reject(err);
+                else return resolve();
             }
         );
     });
@@ -1420,11 +1283,11 @@ EXAMPLE Usages:
 
 > Subscribe to a youtube channel:
 
-vl https://www.youtube.com/watch?v=EeNiqKNtpAA
+vl "https://www.youtube.com/watch?v=EeNiqKNtpAA"
 
     or
 
-vl -s https://www.youtube.com/watch?v=EeNiqKNtpAA
+vl -s "https://www.youtube.com/watch?v=EeNiqKNtpAA"
 
 > Remove a subscription:
 
@@ -1544,7 +1407,7 @@ open_db_global()
     {
         return true;
     }
-    else if(validator.isURL(process.argv[2]))
+    else if(process.argv[2])
     {
         opt.options.subscribe = true;
         return subscribe(process.argv[2]);
