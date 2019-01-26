@@ -1015,16 +1015,40 @@ function remove_subscription()
                 if(validator.isInt(answer))
                 {
                     channel_number = Number(answer);
+                    let channel_name;
+                    let channel_id;
                     return resolve
                     (
-                        sql_promise
-                        (
-                            `
-                            DELETE FROM videos
-                            WHERE
-                                channel_id_id=${channel_number}
-                            `
-                        )
+                        new Promise((reso, reje) =>
+                        {
+                            db.get
+                            (
+                                `SELECT channel_name, channel_id
+                                FROM subscriptions
+                                WHERE channel_id_id=${channel_number}`,
+                                (err, row) =>
+                                {
+                                    if(row && row.channel_name && row.channel_id)
+                                    {
+                                        channel_name = row.channel_name;
+                                        channel_id = row.channel_id;
+
+                                    }
+                                    return reso();
+                                }
+                            );
+                        })
+                        .then(() =>
+                        {
+                            return sql_promise
+                            (
+                                `
+                                DELETE FROM videos
+                                WHERE
+                                    channel_id_id=${channel_number}
+                                `
+                            );
+                        })
                         .then(() =>
                         {
                             return sql_promise
@@ -1038,14 +1062,17 @@ function remove_subscription()
                         })
                         .then(() =>
                         {
-                            console.info
+                            if(!channel_id)
+                                clean_say_dont_replace(`--Invalid selection`);
+                            else clean_say_dont_replace
                             (
-                                '--If it was in subscription list',
-                                'it has now been successfully removed');
+                                `--Channel '${channel_name}'(${channel_id}) ` +
+                                `has been removed`
+                            );
                         })
                     );
                 }
-                else return reject('Invalid input, not an integer');
+                else return reject('--Invalid input, not an integer');
             });
         });
     });
