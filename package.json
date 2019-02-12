@@ -1,40 +1,7 @@
 {
-  "name": "vidlist",
-  "version": "1.0.2",
-  "description": "A command line tool to subscribe to youtube channels and view updates in a locally generated html file",
-  "keywords": [
-    "youtube",
-    "subscribe",
-    "subscriber",
-    "subscription"
-  ],
-  "main": "index.js",
-  "bin": {
-    "vidlist": "index.js",
-    "vl": "index.js",
-    "sub": "index.js"
-  },
-  "scripts": {
-    "start": "node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dxwc/vidlist.git"
-  },
-  "author": "",
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/dxwc/vidlist/issues"
-  },
-  "homepage": "https://github.com/dxwc/vidlist#readme",
   "dependencies": {
-    "entities": "^1.1.2",
-    "moment": "^2.23.0",
-    "node-getopt": "^0.3.2",
-    "opn": "^5.4.0",
-    "sqlite3": "^4.0.4",
-    "validator": "^10.9.0",
-    "vid_data": "^0.3.0",
-    "xss-filters": "^1.2.7"
+    "moment": "^2.24.0",
+    "nedb": "^1.8.0",
+    "rss-parser": "^3.6.2"
   }
 }
