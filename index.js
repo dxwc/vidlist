@@ -930,6 +930,41 @@ function generate_html()
   </style>
 </head>
 <body>
+<script>
+document.addEventListener('DOMContentLoaded', function(e)
+{
+    var observer = new IntersectionObserver(function (entries, observer)
+    {
+        for(var i = 0; i < entries.length; ++i)
+        {
+            if(!entries[i].isIntersecting) return;
+
+            entries[i].target.setAttribute
+            (
+                'src',
+                entries[i].target.getAttribute('data-src')
+            );
+            entries[i].target.removeAttribute('data-src');
+            observer.unobserve(entries[i].target);
+        }
+    },
+    {
+        root : null,
+        threshold : 0,
+        rootMargin : '10%'
+    });
+
+    var imgs = document.querySelectorAll('img');
+    for(var i = 10; i < imgs.length; ++i)
+    {
+        imgs[i].setAttribute('data-src', imgs[i].getAttribute('src'));
+        imgs[i].setAttribute('src', 'about:blank');
+        observer.observe(imgs[i]);
+    }
+
+    imgs = null;
+});
+</script>
 `;
 
 			full += `<div class='container'>`
@@ -1357,7 +1392,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 1.0.2');
+    console.info('vidlist 1.1.0');
     process.exit(0);
 }
 

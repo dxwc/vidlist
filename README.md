@@ -59,13 +59,16 @@ or
 + Doesn't need any google account/API key
 + Latest videos are always on top
 + Everything runs and kept locally, no background processing
-+ Generated HTML file contains no javascript
++ Does not require frontend javascript
++ Thumbnail image lazy-loading after first 10
 + Basic validation and XSS protection are in place
 + It is easy to see where in the `index.js` to edit to change CSS to one's liking
 + Can easily import or export subscription list as text (JSON) file
 
 # Changelog
 
++ 1.1.0
+    + Added thumbnail lazy-loading after first 10
 + 1.0.2
     + YouTube watch/user/channel/embed/shortcut URL are all correctly supported for
      subscribing
