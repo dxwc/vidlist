@@ -66,7 +66,9 @@ or
 + Can easily import or export subscription list as text (JSON) file
 
 # Changelog
-
++ 2.0.0
+    + Fixed broken subscription option after youtube update
+    + Updated packages
 + 1.1.0
     + Added thumbnail lazy-loading after first 10
 + 1.0.2

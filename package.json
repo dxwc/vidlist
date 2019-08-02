@@ -1,6 +1,6 @@
 {
   "name": "vidlist",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "A command line tool to subscribe to youtube channels and view updates in a locally generated html file",
   "keywords": [
     "youtube",
@@ -28,13 +28,13 @@
   },
   "homepage": "https://github.com/dxwc/vidlist#readme",
   "dependencies": {
-    "entities": "^1.1.2",
+    "entities": "^2.0.0",
     "moment": "^2.24.0",
     "node-getopt": "^0.3.2",
-    "opn": "^5.5.0",
+    "open": "^6.4.0",
     "sqlite3": "^4.0.9",
-    "validator": "^10.11.0",
-    "vid_data": "^0.3.1",
+    "validator": "^11.1.0",
+    "vid_data": "^1.0.0",
     "xss-filters": "^1.2.7"
   }
 }

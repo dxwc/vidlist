@@ -4,7 +4,7 @@ const fs        = require('fs');
 const path      = require('path');
 const https     = require('https');
 
-const opn       = require('opn');
+const opn       = require('open');
 const moment    = require('moment');
 const sqlite3   = require('sqlite3');
 const entities  = require('entities');
@@ -1392,7 +1392,7 @@ if(process.argv.length <= 2 || opt.options.help)
 
 if(opt.options.version)
 {
-    console.info('vidlist 1.1.1');
+    console.info('vidlist 2.0.0');
     process.exit(0);
 }
 
