@@ -33,7 +33,7 @@
     "node-getopt": "^0.3.2",
     "open": "^6.4.0",
     "sqlite3": "^4.0.9",
-    "validator": "^11.1.0",
+    "validator": "^13.7.0",
     "vid_data": "^1.0.0",
     "xss-filters": "^1.2.7"
   }
